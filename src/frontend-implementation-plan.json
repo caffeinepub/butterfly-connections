@@ -1,58 +1,42 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Profile photo upload + display (frontend)",
+  "title": "Add “Supporter of the community” profile flag + directory filter (frontend)",
   "requirements": [
     {
-      "id": "REQ-14",
-      "summary": "Add “My Profile” UI to upload/set avatar, add/manage additional profile photos, preview, remove with confirmation/undo-safe interaction, and persist to backend.",
+      "id": "REQ-18",
+      "summary": "Add “Supporter of the community” toggle to My Profile Mentorship section and save/load it with the community profile.",
       "acceptanceCriteria": [
-        "ProfileMe provides controls to (a) upload/set an avatar photo and (b) add one or more additional profile photos.",
-        "Users can see a preview of the current avatar and any uploaded additional photos on ProfileMe.",
-        "Users can remove an additional profile photo from their profile (with clear confirmation or an undo-safe interaction).",
-        "Saving the profile persists the avatar and additional photos such that reloading the page shows the same images."
+        "The ProfileMe edit form shows a third toggle/switch labeled exactly “Supporter of the community” in the same section as the other mentorship toggles.",
+        "When a user toggles “Supporter of the community” and saves, the value persists and is restored on reload.",
+        "In ProfileMe view mode, the Mentorship summary area includes “✓ Supporter of the community” when the flag is enabled."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/backendExtensions.d.ts",
-          "operation": "modify",
-          "description": "Extend/augment the generated backend typings for CommunityProfile to include the new additional profile photos field(s) expected from REQ-12 (e.g., an array of ExternalBlob references) so ProfileMe can compile against the upgraded backend. (Verify the component's usage instructions before implementing.)"
-        },
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Add React Query mutations/queries needed by ProfileMe for photo persistence (e.g., a mutation to upload ExternalBlob(s) with progress support and a mutation to persist the updated CommunityProfile), ensuring relevant profile queries are invalidated so a reload shows the same images. Use blob-storage ExternalBlob APIs (fromBytes, withUploadProgress, getDirectURL) where appropriate. (Verify the component's usage instructions before implementing.)"
-        },
-        {
-          "path": "frontend/src/components/profile/ProfilePhotosManager.tsx",
-          "operation": "create",
-          "description": "Create a reusable ProfilePhotosManager component to handle: file picking, client-side preview (Object URLs / ExternalBlob.getDirectURL), upload progress UI, setting/replacing the avatar, adding multiple additional photos, and remove interactions with confirmation/undo-safe UX. Compose existing shadcn/ui components (e.g., Button, Card, Dialog/AlertDialog if available) without modifying frontend/src/components/ui. (Verify the component's usage instructions before implementing.)"
-        },
-        {
           "path": "frontend/src/pages/ProfileMe.tsx",
           "operation": "modify",
-          "description": "Integrate ProfilePhotosManager into ProfileMe edit/setup flow: show current avatar (from profile.avatar when present) and additional photos gallery, allow updating avatar and additional photos, and ensure Save Profile persists both text fields and photo references via the updated hooks; fall back to frontend/public/assets/generated/default-avatar-set.dim_1024x1024.png when no uploaded avatar is present. (Verify the component's usage instructions before implementing.)"
+          "description": "Extend local form state to include supporterOfCommunity, initialize it from the loaded profile, include it in the CommunityProfile object passed to updateCommunityProfile, add a new Switch+Label control in the Mentorship edit section labeled exactly “Supporter of the community”, and update view-mode mentorship summary rendering to include “✓ Supporter of the community” when true (and ensure the Mentorship block renders when any of the three flags is enabled)."
         }
       ]
     },
     {
-      "id": "REQ-15",
-      "summary": "Render uploaded avatar and additional profile photos on “View Profile” (and other existing profile displays) with fallback to the default avatar asset.",
+      "id": "REQ-19",
+      "summary": "Add “Supporter of the community” directory filter toggle and show supporter status on directory profile cards.",
       "acceptanceCriteria": [
-        "ProfileView shows the user’s uploaded avatar when present; otherwise it falls back to the existing default avatar asset.",
-        "If the user has additional profile photos, ProfileView displays them in a simple gallery layout (responsive, accessible).",
-        "Existing profile text fields continue to render as before (no regressions)."
+        "Directory filter UI includes a third switch labeled exactly “Supporter of the community”.",
+        "Directory queries include the supporterOfCommunity filter value when calling the browse API.",
+        "Directory result cards visually indicate supporter status (e.g., a small label similar to the existing “Mentoring” / “Seeking” indicators) when supporterOfCommunity is true."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/ProfileView.tsx",
+          "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Update ProfileView to render the avatar from the profile’s uploaded avatar blob (using ExternalBlob.getDirectURL()) when present, otherwise use frontend/public/assets/generated/default-avatar-set.dim_1024x1024.png; add a simple responsive, accessible gallery for any additional uploaded profile photos returned on the profile. (Verify the component's usage instructions before implementing.)"
+          "description": "Update useBrowseMentors to accept a filters object that includes supporterOfCommunity, and forward that full filters object to browseMentors; also add a guard so if all three filters are false, the query does not fetch and instead returns an empty list (keeping UX consistent with the existing empty-state UI)."
         },
         {
           "path": "frontend/src/pages/Directory.tsx",
           "operation": "modify",
-          "description": "Update mentor/profile listing cards to display each user’s uploaded avatar when available (using the blob direct URL) and fall back to frontend/public/assets/generated/default-avatar-set.dim_1024x1024.png, ensuring no regressions to existing directory filtering and layout. (Verify the component's usage instructions before implementing.)"
+          "description": "Add a third filter Switch+Label labeled exactly “Supporter of the community”, include supporterOfCommunity in the filters passed to useBrowseMentors, and add a third small status indicator on each result card (styled consistently with existing “Mentoring” / “Seeking” indicators) when profile.supporterOfCommunity is true."
         }
       ]
     }

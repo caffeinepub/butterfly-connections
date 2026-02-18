@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 5,
+  "projectStateVersion": 7,
   "summary": "Butterfly Connections: an 18+ social community platform created by and for transgender, nonbinary, genderfluid, and questioning people to safely connect, share stories, explore identity via posts/discussions/creative expression, build friendships, and connect with mentors/peers.",
   "architectural_notes": [],
   "known_issues": [],
@@ -109,6 +109,22 @@
         "REQ-15"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-on-the-my-profile-page-add-a-new-selection-control-in-the-mentorship-section-labeled-supporter-of-the-community-alongside-open-to-mentoring-others-and-seeking-mentorship-and-ensure-it-is-saved-loaded-with-the-profile",
+      "title": "On the “My Profile” page, add a new selection control in the Mentorship section labeled “Supporter of the community”, alongside “Open to mentoring others” and “Seeking mentorship”, and ensure it is saved/loaded with the profile.",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-on-the-directory-page-add-a-filter-toggle-labeled-supporter-of-the-community-alongside-the-existing-mentorship-filters-and-display-the-supporter-status-on-profile-cards-when-enabled-on-a-profile",
+      "title": "On the Directory page, add a filter toggle labeled “Supporter of the community” alongside the existing mentorship filters, and display the supporter status on profile cards when enabled on a profile.",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -173,6 +189,28 @@
       "summary": "Preserve existing production profile data when introducing new profile photo fields by implementing a conditional canister state migration (only if there is existing stable state) that upgrades stored profiles without data loss.",
       "reqIds": [
         "REQ-13"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Add a new selectable profile/directory flag “Supporter of the community” alongside “Seeking mentorship” and “Open to mentoring”.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Add a new boolean field to community profiles named “supporterOfCommunity” and persist it alongside the existing mentorship flags so that users can save and retrieve this selection with their profile.",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "Extend the directory browsing API so the directory can be filtered by “Supporter of the community” in addition to “Open to mentoring” and “Seeking mentorship”.",
+      "reqIds": [
+        "REQ-17"
       ],
       "status": "pending"
     }

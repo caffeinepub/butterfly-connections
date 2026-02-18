@@ -1,13 +1,12 @@
 import Map "mo:core/Map";
-import Text "mo:core/Text";
 import Array "mo:core/Array";
 import Order "mo:core/Order";
 import Runtime "mo:core/Runtime";
-import Iter "mo:core/Iter";
 import Principal "mo:core/Principal";
 import Storage "blob-storage/Storage";
-import MixinStorage "blob-storage/Mixin";
+import Iter "mo:core/Iter";
 import MixinAuthorization "authorization/MixinAuthorization";
+import MixinStorage "blob-storage/Mixin";
 import AccessControl "authorization/access-control";
 import Migration "migration";
 
@@ -27,6 +26,7 @@ actor {
     profilePhoto : ?Storage.ExternalBlob;
     openToMentoring : Bool;
     seekingMentorship : Bool;
+    supporterOfCommunity : Bool; // New field
   };
 
   type PostId = Nat;
@@ -94,14 +94,15 @@ actor {
     };
   };
 
-  public query ({ caller }) func browseMentors(lookingFor : { mentoring : Bool; mentorship : Bool }) : async [CommunityProfile] {
+  public query ({ caller }) func browseMentors(lookingFor : { mentoring : Bool; mentorship : Bool; supporterOfCommunity : Bool }) : async [CommunityProfile] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can browse mentors");
     };
     let filteredProfiles = communityProfiles.values().toArray().filter(
       func(p) {
         (lookingFor.mentoring and p.openToMentoring) or
-        (lookingFor.mentorship and p.seekingMentorship)
+        (lookingFor.mentorship and p.seekingMentorship) or
+        (lookingFor.supporterOfCommunity and p.supporterOfCommunity)
       }
     );
     filteredProfiles;

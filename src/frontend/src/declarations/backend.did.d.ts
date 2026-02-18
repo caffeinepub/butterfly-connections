@@ -18,6 +18,7 @@ export interface CommunityProfile {
   'tags' : Array<string>,
   'pronouns' : string,
   'openToMentoring' : boolean,
+  'supporterOfCommunity' : boolean,
   'avatar' : [] | [ExternalBlob],
 }
 export type ExternalBlob = Uint8Array;
@@ -56,7 +57,13 @@ export interface _SERVICE {
   'addContact' : ActorMethod<[Principal], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'browseMentors' : ActorMethod<
-    [{ 'mentorship' : boolean, 'mentoring' : boolean }],
+    [
+      {
+        'supporterOfCommunity' : boolean,
+        'mentorship' : boolean,
+        'mentoring' : boolean,
+      },
+    ],
     Array<CommunityProfile>
   >,
   'confirmEligibility' : ActorMethod<[], undefined>,

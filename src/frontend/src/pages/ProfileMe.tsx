@@ -22,6 +22,7 @@ export default function ProfileMe() {
   const [tags, setTags] = useState('');
   const [openToMentoring, setOpenToMentoring] = useState(false);
   const [seekingMentorship, setSeekingMentorship] = useState(false);
+  const [supporterOfCommunity, setSupporterOfCommunity] = useState(false);
   const [avatar, setAvatar] = useState<ExternalBlob | undefined>(undefined);
   const [profilePhoto, setProfilePhoto] = useState<ExternalBlob | undefined>(undefined);
   const [isEditing, setIsEditing] = useState(false);
@@ -35,6 +36,7 @@ export default function ProfileMe() {
       setTags(profile.tags.join(', ') || '');
       setOpenToMentoring(profile.openToMentoring || false);
       setSeekingMentorship(profile.seekingMentorship || false);
+      setSupporterOfCommunity(profile.supporterOfCommunity || false);
       setAvatar(profile.avatar);
       setProfilePhoto(profile.profilePhoto);
     }
@@ -53,6 +55,7 @@ export default function ProfileMe() {
       tags: tags.split(',').map(t => t.trim()).filter(t => t.length > 0),
       openToMentoring,
       seekingMentorship,
+      supporterOfCommunity,
       avatar,
       profilePhoto,
     };
@@ -192,6 +195,17 @@ export default function ProfileMe() {
                       onCheckedChange={setSeekingMentorship}
                     />
                   </div>
+
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="supporter" className="cursor-pointer">
+                      Supporter of the community
+                    </Label>
+                    <Switch
+                      id="supporter"
+                      checked={supporterOfCommunity}
+                      onCheckedChange={setSupporterOfCommunity}
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -215,6 +229,7 @@ export default function ProfileMe() {
                         setTags(profile.tags.join(', ') || '');
                         setOpenToMentoring(profile.openToMentoring || false);
                         setSeekingMentorship(profile.seekingMentorship || false);
+                        setSupporterOfCommunity(profile.supporterOfCommunity || false);
                         setAvatar(profile.avatar);
                         setProfilePhoto(profile.profilePhoto);
                       }
@@ -286,7 +301,7 @@ export default function ProfileMe() {
                     </div>
                   )}
 
-                  {(profile?.openToMentoring || profile?.seekingMentorship) && (
+                  {(profile?.openToMentoring || profile?.seekingMentorship || profile?.supporterOfCommunity) && (
                     <div className="pt-4 border-t border-[oklch(0.90_0.02_320)]">
                       <h3 className="text-sm font-medium text-[oklch(0.50_0.06_320)] mb-2">Mentorship</h3>
                       <div className="space-y-1">
@@ -295,6 +310,9 @@ export default function ProfileMe() {
                         )}
                         {profile.seekingMentorship && (
                           <p className="text-[oklch(0.35_0.08_320)]">✓ Seeking mentorship</p>
+                        )}
+                        {profile.supporterOfCommunity && (
+                          <p className="text-[oklch(0.35_0.08_320)]">✓ Supporter of the community</p>
                         )}
                       </div>
                     </div>

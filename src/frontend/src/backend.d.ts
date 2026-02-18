@@ -22,6 +22,7 @@ export interface CommunityProfile {
     tags: Array<string>;
     pronouns: string;
     openToMentoring: boolean;
+    supporterOfCommunity: boolean;
     avatar?: ExternalBlob;
 }
 export enum UserRole {
@@ -34,6 +35,7 @@ export interface backendInterface {
     addContact(to: Principal): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     browseMentors(lookingFor: {
+        supporterOfCommunity: boolean;
         mentorship: boolean;
         mentoring: boolean;
     }): Promise<Array<CommunityProfile>>;

@@ -76,13 +76,17 @@ export function useUpdateCommunityProfile() {
 }
 
 // Directory
-export function useBrowseMentors(filters: { mentoring: boolean; mentorship: boolean }) {
+export function useBrowseMentors(filters: { mentoring: boolean; mentorship: boolean; supporterOfCommunity: boolean }) {
   const { actor, isFetching: actorFetching } = useActor();
 
   return useQuery<CommunityProfile[]>({
     queryKey: ['mentors', filters],
     queryFn: async () => {
       if (!actor) return [];
+      // If all filters are false, return empty array to avoid unnecessary backend call
+      if (!filters.mentoring && !filters.mentorship && !filters.supporterOfCommunity) {
+        return [];
+      }
       return actor.browseMentors(filters);
     },
     enabled: !!actor && !actorFetching,

@@ -1,7 +1,7 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-18T02:19:48.105Z",
+  "generatedAt": "2026-02-18T02:36:18.817Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
@@ -11,44 +11,40 @@
     "implemented": 2,
     "items": [
       {
-        "id": "REQ-12",
-        "summary": "Extend community profiles to support user-uploaded profile photos (in addition to the existing avatar field), including storing and retrieving the uploaded image blobs as part of each user’s profile.",
+        "id": "REQ-16",
+        "summary": "Add a new boolean field to community profiles named “supporterOfCommunity” and persist it alongside the existing mentorship flags so that users can save and retrieve this selection with their profile.",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
       },
       {
-        "id": "REQ-13",
-        "summary": "Preserve existing production profile data when introducing new profile photo fields by implementing a conditional canister state migration (only if there is existing stable state) that upgrades stored profiles without data loss.",
+        "id": "REQ-17",
+        "summary": "Extend the directory browsing API so the directory can be filtered by “Supporter of the community” in addition to “Open to mentoring” and “Seeking mentorship”.",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
       },
       {
-        "id": "REQ-14",
-        "summary": "Add UI on the “My Profile” page to let users upload and manage their profile photos: set/replace avatar photo, add additional photos, preview photos, and remove photos, then persist changes to the backend profile.",
+        "id": "REQ-18",
+        "summary": "On the “My Profile” page, add a new selection control in the Mentorship section labeled “Supporter of the community”, alongside “Open to mentoring others” and “Seeking mentorship”, and ensure it is saved/loaded with the profile.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/backendExtensions.d.ts",
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/components/profile/ProfilePhotosManager.tsx",
           "frontend/src/pages/ProfileMe.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/profile/ProfilePhotosManager.tsx",
           "frontend/src/pages/ProfileMe.tsx"
         ]
       },
       {
-        "id": "REQ-15",
-        "summary": "Render user-uploaded avatar/profile photos on the “View Profile” page (and any other existing profile displays) so that other users see the customized profile visuals instead of always seeing the default avatar image.",
+        "id": "REQ-19",
+        "summary": "On the Directory page, add a filter toggle labeled “Supporter of the community” alongside the existing mentorship filters, and display the supporter status on profile cards when enabled on a profile.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/ProfileView.tsx",
+          "frontend/src/hooks/useQueries.ts",
           "frontend/src/pages/Directory.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/ProfileView.tsx",
+          "frontend/src/hooks/useQueries.ts",
           "frontend/src/pages/Directory.tsx"
         ]
       }
@@ -58,18 +54,16 @@
     "backend/main.mo",
     "backend/migration.mo",
     "build-request.json",
-    "build-template/README.md",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
     "frontend/src/backend.d.ts",
     "frontend/src/backend.ts",
-    "frontend/src/components/profile/ProfilePhotosManager.tsx",
     "frontend/src/declarations/backend.did.d.ts",
     "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useQueries.ts",
     "frontend/src/pages/Directory.tsx",
     "frontend/src/pages/ProfileMe.tsx",
-    "frontend/src/pages/ProfileView.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

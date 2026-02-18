@@ -33,6 +33,7 @@ export const CommunityProfile = IDL.Record({
   'tags' : IDL.Vec(IDL.Text),
   'pronouns' : IDL.Text,
   'openToMentoring' : IDL.Bool,
+  'supporterOfCommunity' : IDL.Bool,
   'avatar' : IDL.Opt(ExternalBlob),
 });
 
@@ -68,7 +69,13 @@ export const idlService = IDL.Service({
   'addContact' : IDL.Func([IDL.Principal], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'browseMentors' : IDL.Func(
-      [IDL.Record({ 'mentorship' : IDL.Bool, 'mentoring' : IDL.Bool })],
+      [
+        IDL.Record({
+          'supporterOfCommunity' : IDL.Bool,
+          'mentorship' : IDL.Bool,
+          'mentoring' : IDL.Bool,
+        }),
+      ],
       [IDL.Vec(CommunityProfile)],
       ['query'],
     ),
@@ -125,6 +132,7 @@ export const idlFactory = ({ IDL }) => {
     'tags' : IDL.Vec(IDL.Text),
     'pronouns' : IDL.Text,
     'openToMentoring' : IDL.Bool,
+    'supporterOfCommunity' : IDL.Bool,
     'avatar' : IDL.Opt(ExternalBlob),
   });
   
@@ -160,7 +168,13 @@ export const idlFactory = ({ IDL }) => {
     'addContact' : IDL.Func([IDL.Principal], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'browseMentors' : IDL.Func(
-        [IDL.Record({ 'mentorship' : IDL.Bool, 'mentoring' : IDL.Bool })],
+        [
+          IDL.Record({
+            'supporterOfCommunity' : IDL.Bool,
+            'mentorship' : IDL.Bool,
+            'mentoring' : IDL.Bool,
+          }),
+        ],
         [IDL.Vec(CommunityProfile)],
         ['query'],
       ),

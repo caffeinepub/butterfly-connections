@@ -97,6 +97,7 @@ export interface CommunityProfile {
     tags: Array<string>;
     pronouns: string;
     openToMentoring: boolean;
+    supporterOfCommunity: boolean;
     avatar?: ExternalBlob;
 }
 export interface _CaffeineStorageCreateCertificateResult {
@@ -127,6 +128,7 @@ export interface backendInterface {
     addContact(to: Principal): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     browseMentors(lookingFor: {
+        supporterOfCommunity: boolean;
         mentorship: boolean;
         mentoring: boolean;
     }): Promise<Array<CommunityProfile>>;
@@ -286,6 +288,7 @@ export class Backend implements backendInterface {
         }
     }
     async browseMentors(arg0: {
+        supporterOfCommunity: boolean;
         mentorship: boolean;
         mentoring: boolean;
     }): Promise<Array<CommunityProfile>> {
@@ -486,6 +489,7 @@ async function from_candid_record_n12(_uploadFile: (file: ExternalBlob) => Promi
     tags: Array<string>;
     pronouns: string;
     openToMentoring: boolean;
+    supporterOfCommunity: boolean;
     avatar: [] | [_ExternalBlob];
 }): Promise<{
     bio: string;
@@ -495,6 +499,7 @@ async function from_candid_record_n12(_uploadFile: (file: ExternalBlob) => Promi
     tags: Array<string>;
     pronouns: string;
     openToMentoring: boolean;
+    supporterOfCommunity: boolean;
     avatar?: ExternalBlob;
 }> {
     return {
@@ -505,6 +510,7 @@ async function from_candid_record_n12(_uploadFile: (file: ExternalBlob) => Promi
         tags: value.tags,
         pronouns: value.pronouns,
         openToMentoring: value.openToMentoring,
+        supporterOfCommunity: value.supporterOfCommunity,
         avatar: record_opt_to_undefined(await from_candid_opt_n13(_uploadFile, _downloadFile, value.avatar))
     };
 }
@@ -555,6 +561,7 @@ async function to_candid_record_n18(_uploadFile: (file: ExternalBlob) => Promise
     tags: Array<string>;
     pronouns: string;
     openToMentoring: boolean;
+    supporterOfCommunity: boolean;
     avatar?: ExternalBlob;
 }): Promise<{
     bio: string;
@@ -564,6 +571,7 @@ async function to_candid_record_n18(_uploadFile: (file: ExternalBlob) => Promise
     tags: Array<string>;
     pronouns: string;
     openToMentoring: boolean;
+    supporterOfCommunity: boolean;
     avatar: [] | [_ExternalBlob];
 }> {
     return {
@@ -574,6 +582,7 @@ async function to_candid_record_n18(_uploadFile: (file: ExternalBlob) => Promise
         tags: value.tags,
         pronouns: value.pronouns,
         openToMentoring: value.openToMentoring,
+        supporterOfCommunity: value.supporterOfCommunity,
         avatar: value.avatar ? candid_some(await to_candid_ExternalBlob_n19(_uploadFile, _downloadFile, value.avatar)) : candid_none()
     };
 }
