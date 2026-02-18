@@ -4,27 +4,25 @@ import { MessageCircleHeart } from 'lucide-react';
 import HelloCornerComposer from './HelloCornerComposer';
 import HelloCornerMessageList from './HelloCornerMessageList';
 import { useListHelloCornerMessages, useCreateHelloCornerMessage } from '../../hooks/useHelloCorner';
-import { ExternalBlob } from '../../backend';
+
+// Local type definition
+type ExternalBlob = any;
 
 export default function HelloCornerSection() {
-  const [offset, setOffset] = useState(0n);
-  const limit = 20n;
+  const [offset, setOffset] = useState(0);
+  const limit = 20;
 
-  const { data, isLoading, isError, refetch } = useListHelloCornerMessages(offset, limit);
+  const { data = [], isLoading, isError, refetch } = useListHelloCornerMessages(offset, limit);
   const createMessageMutation = useCreateHelloCornerMessage();
 
   const handleSubmit = async (text: string, photo: ExternalBlob | null, video: ExternalBlob | null) => {
     await createMessageMutation.mutateAsync({ text, photo, video });
     // Reset to first page after posting
-    setOffset(0n);
+    setOffset(0);
   };
 
   const handleLoadMore = () => {
-    if (data?.hasMore) {
-      setOffset(data.nextOffset);
-    } else {
-      refetch();
-    }
+    setOffset(offset + limit);
   };
 
   return (
@@ -49,12 +47,12 @@ export default function HelloCornerSection() {
       />
 
       <HelloCornerMessageList
-        messages={data?.messages || []}
+        messages={data}
         isLoading={isLoading}
         isError={isError}
-        hasMore={data?.hasMore || false}
+        hasMore={false}
         onLoadMore={handleLoadMore}
-        isLoadingMore={isLoading && offset > 0n}
+        isLoadingMore={isLoading && offset > 0}
       />
     </div>
   );

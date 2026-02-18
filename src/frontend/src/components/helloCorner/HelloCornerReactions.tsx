@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ThumbsUp, ThumbsDown } from 'lucide-react';
-import { ReactionType, MessageId } from '../../backend';
+
+// Local type definitions (backend doesn't export these)
+type MessageId = bigint;
+type ReactionType = { __kind__: 'like' } | { __kind__: 'dislike' };
 
 interface HelloCornerReactionsProps {
   messageId: MessageId;
@@ -32,7 +35,7 @@ export default function HelloCornerReactions({
 
     setIsPending(true);
     try {
-      if (localReaction === reaction) {
+      if (localReaction?.__kind__ === reaction.__kind__) {
         // Remove reaction if clicking the same one
         await onRemoveReaction();
         setLocalReaction(null);
@@ -48,15 +51,18 @@ export default function HelloCornerReactions({
     }
   };
 
+  const likeReaction: ReactionType = { __kind__: 'like' };
+  const dislikeReaction: ReactionType = { __kind__: 'dislike' };
+
   return (
     <div className="flex items-center gap-2">
       <Button
         variant="outline"
         size="sm"
-        onClick={() => handleReaction(ReactionType.like)}
+        onClick={() => handleReaction(likeReaction)}
         disabled={isPending}
         className={`border-[oklch(0.90_0.02_320)] ${
-          localReaction === ReactionType.like
+          localReaction?.__kind__ === 'like'
             ? 'bg-[oklch(0.65_0.15_320)] text-white border-[oklch(0.65_0.15_320)]'
             : 'text-[oklch(0.45_0.06_320)] hover:bg-[oklch(0.95_0.02_320)]'
         }`}
@@ -68,10 +74,10 @@ export default function HelloCornerReactions({
       <Button
         variant="outline"
         size="sm"
-        onClick={() => handleReaction(ReactionType.dislike)}
+        onClick={() => handleReaction(dislikeReaction)}
         disabled={isPending}
         className={`border-[oklch(0.90_0.02_320)] ${
-          localReaction === ReactionType.dislike
+          localReaction?.__kind__ === 'dislike'
             ? 'bg-[oklch(0.45_0.06_320)] text-white border-[oklch(0.45_0.06_320)]'
             : 'text-[oklch(0.45_0.06_320)] hover:bg-[oklch(0.95_0.02_320)]'
         }`}

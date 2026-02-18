@@ -4,8 +4,29 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 import { useListReports, useResolveReport } from '../../hooks/useModeration';
-import { ReportType, ReportStatus } from '../../backend';
-import type { Report, ReasonType } from '../../backend';
+
+// Local type definitions (backend doesn't export these)
+type ReportId = bigint;
+type ReportStatus = { __kind__: 'pending' } | { __kind__: 'reviewed' };
+type ReportType = { __kind__: 'profile' } | { __kind__: 'message' };
+type ReasonType = 
+  | { __kind__: 'lecture' }
+  | { __kind__: 'troll' }
+  | { __kind__: 'offTopic' }
+  | { __kind__: 'violation' }
+  | { __kind__: 'insensitive' }
+  | { __kind__: 'other'; value: string };
+
+type Report = {
+  id: ReportId;
+  reporter: any;
+  contentId: string;
+  reportType: ReportType;
+  reasonType: ReasonType;
+  description: string;
+  status: ReportStatus;
+  timestamp: bigint;
+};
 
 export default function ReportsSection() {
   const [skip] = useState(0);
@@ -27,13 +48,13 @@ export default function ReportsSection() {
     if (reasonType.__kind__ === 'offTopic') return 'Off Topic';
     if (reasonType.__kind__ === 'violation') return 'Violation';
     if (reasonType.__kind__ === 'insensitive') return 'Insensitive';
-    if (reasonType.__kind__ === 'other') return `Other: ${reasonType.other}`;
+    if (reasonType.__kind__ === 'other') return `Other: ${reasonType.value}`;
     return 'Unknown';
   };
 
   const getTypeLabel = (reportType: ReportType): string => {
-    if (reportType === ReportType.profile) return 'Profile';
-    if (reportType === ReportType.message) return 'Message';
+    if (reportType.__kind__ === 'profile') return 'Profile';
+    if (reportType.__kind__ === 'message') return 'Message';
     return 'Unknown';
   };
 
@@ -82,7 +103,7 @@ export default function ReportsSection() {
         ) : (
           <div className="space-y-4">
             {reports.map((report) => {
-              const isPending = report.status === ReportStatus.pending;
+              const isPending = report.status.__kind__ === 'pending';
               return (
                 <div
                   key={report.id.toString()}
@@ -93,7 +114,7 @@ export default function ReportsSection() {
                       <div className="flex items-center gap-2 flex-wrap">
                         <Badge variant="outline">{getTypeLabel(report.reportType)}</Badge>
                         <Badge variant="secondary">{getReasonLabel(report.reasonType)}</Badge>
-                        {report.status === ReportStatus.reviewed ? (
+                        {report.status.__kind__ === 'reviewed' ? (
                           <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
                             Reviewed
                           </Badge>

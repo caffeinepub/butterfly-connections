@@ -1,9 +1,21 @@
-import { HelloCornerMessage } from '../../backend';
 import HelloCornerMessageItem from './HelloCornerMessageItem';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { MessageCircle, Loader2 } from 'lucide-react';
+
+// Local type definitions (backend doesn't export these)
+type MessageId = bigint;
+type ExternalBlob = any;
+
+type HelloCornerMessage = {
+  id: MessageId;
+  author: any;
+  text: string;
+  photo: ExternalBlob | null;
+  video: ExternalBlob | null;
+  createdAt: bigint;
+};
 
 interface HelloCornerMessageListProps {
   messages: HelloCornerMessage[];

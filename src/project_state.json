@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 13,
+  "projectStateVersion": 15,
   "summary": "Butterfly Connections: an 18+ social community platform created by and for transgender, nonbinary, genderfluid, and questioning people to safely connect, share stories, explore identity via posts/discussions/creative expression, build friendships, and connect with mentors/peers.",
   "architectural_notes": [],
   "known_issues": [],
@@ -197,6 +197,30 @@
         "REQ-35"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-replace-the-current-placeholder-my-connections-page-with-a-forum-board-experience-that-supports-browsing-thread-style-posts-created-within-the-connections-area",
+      "title": "Replace the current placeholder “My Connections” page with a forum-board experience that supports browsing thread-style posts created within the Connections area.",
+      "reqIds": [
+        "REQ-36"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-react-query-hooks-for-connections-forum-threads-and-replies-and-wire-them-into-the-connections-page-so-thread-creation-and-replying-update-the-ui-without-a-full-page-reload",
+      "title": "Add React Query hooks for Connections forum threads and replies, and wire them into the Connections page so thread creation and replying update the UI without a full page reload.",
+      "reqIds": [
+        "REQ-39"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-thread-detail-view-accessible-from-the-connections-thread-list-showing-the-original-thread-post-and-a-reply-thread-beneath-it-with-a-reply-composer",
+      "title": "Add a thread detail view accessible from the Connections thread list, showing the original thread post and a reply thread beneath it, with a reply composer.",
+      "reqIds": [
+        "REQ-40"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -369,6 +393,40 @@
       "summary": "Add moderator role management in the backend so the owner/admin can appoint and remove additional moderators, and the app can distinguish at least: regular user, moderator, and admin/owner.",
       "reqIds": [
         "REQ-32"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-29",
+      "summary": "Add a forum-style threaded board experience (Reddit-like) for posting and browsing threads.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-30",
+      "summary": "Convert the web app into an installable phone-app experience via Progressive Web App (PWA) support (Add to Home Screen, app icon, standalone mode).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-31",
+      "summary": "Update “My Connections” to function like a forum board: allow thread-style posts and threaded replies within the Connections area.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-33",
+      "summary": "Implement backend storage and APIs for a Connections forum board with threads and replies, where only authenticated, eligible, non-banned users can create content and read content.",
+      "reqIds": [
+        "REQ-37"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-34",
+      "summary": "Limit visibility of Connections forum board content to the user’s connection network: only the thread author and the author’s accepted connections can view and reply to that author’s threads.",
+      "reqIds": [
+        "REQ-38"
       ],
       "status": "pending"
     }

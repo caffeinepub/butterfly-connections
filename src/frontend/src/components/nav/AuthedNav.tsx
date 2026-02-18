@@ -2,17 +2,19 @@ import { Link, useNavigate } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { Home, Users, UserCircle, BookOpen, LogOut, Shield } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
-import { useIsCallerModerator } from '../../hooks/useModeration';
+import { useGetCallerPermissions } from '../../hooks/useModeration';
 
 export default function AuthedNav() {
   const navigate = useNavigate();
   const { logout } = useAuth();
-  const { isModerator, isLoading: moderatorLoading } = useIsCallerModerator();
+  const { data: permissions, isLoading: moderatorLoading } = useGetCallerPermissions();
 
   const handleLogout = async () => {
     await logout();
     navigate({ to: '/' });
   };
+
+  const showModeration = permissions?.isAdmin || permissions?.isModerator;
 
   return (
     <nav className="bg-white/80 backdrop-blur-md border-b border-[oklch(0.90_0.02_320)] sticky top-0 z-50">
@@ -38,7 +40,7 @@ export default function AuthedNav() {
             <NavLink to="/profile" icon={<UserCircle className="w-4 h-4" />} label="Profile" />
             <NavLink to="/guidelines" icon={<BookOpen className="w-4 h-4" />} label="Guidelines" />
             
-            {!moderatorLoading && isModerator && (
+            {!moderatorLoading && showModeration && (
               <NavLink to="/moderation" icon={<Shield className="w-4 h-4" />} label="Moderation" />
             )}
 

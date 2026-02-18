@@ -1,9 +1,22 @@
-import { HelloCornerMessage, ReactionType, MessageId } from '../../backend';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import HelloCornerReactions from './HelloCornerReactions';
 import { useGetMessageReactions, useReactToMessage, useRemoveReaction } from '../../hooks/useHelloCorner';
 import { Skeleton } from '@/components/ui/skeleton';
+
+// Local type definitions (backend doesn't export these)
+type MessageId = bigint;
+type ReactionType = { __kind__: 'like' } | { __kind__: 'dislike' };
+type ExternalBlob = any;
+
+type HelloCornerMessage = {
+  id: MessageId;
+  author: any;
+  text: string;
+  photo: ExternalBlob | null;
+  video: ExternalBlob | null;
+  createdAt: bigint;
+};
 
 interface HelloCornerMessageItemProps {
   message: HelloCornerMessage;
@@ -81,8 +94,8 @@ export default function HelloCornerMessageItem({ message }: HelloCornerMessageIt
               ) : reactions ? (
                 <HelloCornerReactions
                   messageId={message.id}
-                  likeCount={Number(reactions.likeCount)}
-                  dislikeCount={Number(reactions.dislikeCount)}
+                  likeCount={Number(reactions.likes)}
+                  dislikeCount={Number(reactions.dislikes)}
                   currentReaction={currentReaction}
                   onReact={handleReact}
                   onRemoveReaction={handleRemoveReaction}

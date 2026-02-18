@@ -1,89 +1,86 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-18T03:06:18.803Z",
-  "summary": "The diff adds a moderation dashboard UI shell (tabs for Reports/User Actions/Role Management), React Query hooks for reports and ban actions, a banned-user screen, and a migration that introduces `bannedUsers`/`reports` into stable state. However, moderator role management is not actually implemented end-to-end (backend APIs + frontend hooks/UI), moderator access is still effectively admin-only, and it’s unclear from the diff summary that backend ban enforcement is applied across existing user actions as required.",
+  "generatedAt": "2026-02-18T03:34:23.837Z",
+  "summary": "Connections forum UI, hooks, and a thread-detail route were added, and backend thread storage/APIs were started. However, key backend access-gating requirements (eligibility + non-banned enforcement) are not evidenced, and the diff introduces substantial unrelated changes/stubs to Feed/Hello Corner, Moderation, Directory, and Profile that were not requested and conflict with stated non-goals/constraints.",
   "missing_requirements": [
     {
-      "id": "REQ-31",
-      "requirement": "Backend exposes admin/moderator-only methods to ban/unban, a method to check ban status, and rejects all authenticated user actions for banned users with a clear message; define and implement a consistent rule for banned users accessing moderation actions.",
-      "reason": "Frontend hooks call methods like `banUser`, `unbanUser`, `isUserBannedForAdminCheck`, and `getBanReason`, but the diff summary for `backend/main.mo` does not show these methods being implemented nor any centralized ban-check enforcement applied to existing endpoints (eligibility, profile updates, browsing, posting, reacting, reporting). The rule for whether banned users can access moderation actions is not documented/visible in the shown backend changes.",
+      "id": "REQ-37",
+      "requirement": "All Connections forum methods enforce the same access gating used elsewhere: caller must be a permitted #user and must not be banned (returning clear trap errors when blocked), and only authenticated, eligible, non-banned users can create/read content.",
+      "reason": "The backend methods shown enforce only #user permission checks; there is no evidence of eligibility checks or banned-user checks in the Connections forum methods. The BuildRequest explicitly requires eligibility and non-banned gating for creating and reading content.",
       "evidence": [
-        "backend/main.mo (truncated; shows `let bannedUsers = Map.empty<Principal, Text>()` but no ban APIs or enforcement shown)",
-        "frontend/src/hooks/useModeration.ts (calls `actor.banUser`, `actor.unbanUser`, `actor.isUserBannedForAdminCheck`, `actor.getBanReason`)"
+        "backend/main.mo"
       ]
     },
     {
-      "id": "REQ-32",
-      "requirement": "Add moderator role management in backend: admin-only grant/revoke moderator role, queries for caller role and listing moderators (admin-only), and update authorization so moderation actions are allowed for moderators as well as admins; role state persists across upgrades.",
-      "reason": "No backend moderator state or APIs are shown in `backend/main.mo` or `backend/migration.mo`. Frontend explicitly notes moderator role is not yet implemented and treats only `admin` as moderator. The Role Management UI is a placeholder (“coming soon”).",
+      "id": "REQ-38",
+      "requirement": "Limit visibility of Connections forum board content to the user’s connection network for all relevant operations (list threads, fetch thread/replies, create reply).",
+      "reason": "The diff shows connection-based filtering for listThreads and getThread via isConnection(caller, thread.author), but the summary is truncated and does not provide evidence that reply creation and reply listing (getThreadReplies/replyToThread) also enforce the same connection-network rule.",
       "evidence": [
-        "frontend/src/hooks/useModeration.ts (comment: \"Currently only admins have moderation access until moderator role is added to backend\" and `isModerator: role === 'admin'`)",
-        "frontend/src/components/moderation/RoleManagementSection.tsx (placeholder: \"Moderator role management is coming soon!\")",
-        "backend/migration.mo (adds `bannedUsers` and `reports` only; no moderator role state)",
-        "backend/main.mo (truncated; no moderator role state/APIs shown)"
-      ]
-    },
-    {
-      "id": "REQ-33",
-      "requirement": "Moderation Dashboard is accessible to moderators and admins (not admin-only), with functional sections including an admin-only section to appoint/remove moderators.",
-      "reason": "The route gating uses `useIsCallerModerator()`, but that hook currently considers only `admin` as moderator, so moderators (as a distinct role) would not be able to access the dashboard. The Role Management section is not functional (placeholder) and does not implement appoint/remove actions.",
-      "evidence": [
-        "frontend/src/hooks/useModeration.ts (`isModerator: role === 'admin'`)",
-        "frontend/src/pages/Moderation.tsx (gates access on `isModerator` and renders `RoleManagementSection` which is placeholder)",
-        "frontend/src/components/moderation/RoleManagementSection.tsx (no appoint/remove functionality)"
-      ]
-    },
-    {
-      "id": "REQ-34",
-      "requirement": "Wire moderation dashboard to backend APIs using React Query hooks for checking caller role/permissions, listing moderators (admin-only), banning/unbanning, and granting/revoking moderator role (admin-only); show success/error states and refresh queries; keep types type-safe.",
-      "reason": "Hooks exist for caller role, reports, and ban/unban, but there are no React Query hooks for listing moderators or granting/revoking moderator role. The UI does not implement role-management mutations. Also, `backendExtensions.d.ts` introduces an `ExtendedBackendInterface` for future methods but those are not actually wired/used as type-safe actor calls in the shown hooks.",
-      "evidence": [
-        "frontend/src/hooks/useModeration.ts (no `useListModerators`, `useGrantModeratorRole`, `useRevokeModeratorRole` hooks present)",
-        "frontend/src/components/moderation/RoleManagementSection.tsx (placeholder, no mutations/queries)",
-        "frontend/src/backendExtensions.d.ts (documents \"future implementation\" methods rather than integrating them into the actual actor typing used by hooks)"
+        "backend/main.mo",
+        "frontend/src/hooks/useConnectionsForum.ts"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Migration/type changes introducing unrelated fields (e.g., `supporterOfCommunity` on profiles and optional `video` on `HelloCornerMessage`).",
-      "reason": "These are not requested by REQ-31 to REQ-35 and appear as additional schema changes bundled into `backend/migration.mo` and `backend/main.mo`.",
+      "description": "Large-scale stubbing/placeholdering of existing app features (Feed/Hello Corner, Moderation, Directory, Profile, Post Detail), including replacing pages with \"temporarily unavailable\" messaging and adding stub React Query hooks for Hello Corner and Moderation.",
+      "reason": "BuildRequest explicitly states non-goals: do not replace/redesign existing global Feed/Hello Corner features as part of this request. These changes go beyond the Connections forum scope and alter unrelated features.",
       "evidence": [
-        "backend/migration.mo (adds `supporterOfCommunity` and `HelloCornerMessage.video` comments: \"New field\")",
-        "backend/main.mo (includes `supporterOfCommunity` and `video` in types)"
+        "frontend/src/pages/Feed.tsx",
+        "frontend/src/hooks/useHelloCorner.ts",
+        "frontend/src/components/helloCorner/HelloCornerSection.tsx",
+        "frontend/src/components/helloCorner/HelloCornerMessageItem.tsx",
+        "frontend/src/pages/Moderation.tsx",
+        "frontend/src/hooks/useModeration.ts",
+        "frontend/src/pages/Directory.tsx",
+        "frontend/src/pages/ProfileMe.tsx",
+        "frontend/src/pages/ProfileView.tsx",
+        "frontend/src/pages/PostDetail.tsx",
+        "frontend/src/components/moderation/ReportsSection.tsx",
+        "frontend/src/components/moderation/UserActionsSection.tsx"
       ]
     },
     {
-      "description": "Frontend type extensions for Posts and Comments and related feed methods (createPost/getFeed/deletePost, comments APIs).",
-      "reason": "Not requested by REQ-31 to REQ-35; `frontend/src/backendExtensions.d.ts` adds post/comment interfaces and methods unrelated to banning/moderation roles/dashboard wiring.",
+      "description": "Introduced backend migration module/file and refactored actor initialization to use it.",
+      "reason": "Constraint states backend must remain a single-actor Motoko canister with all logic in backend/main.mo. Adding backend/migration.mo introduces additional backend logic outside main.mo beyond the requested Connections forum features.",
       "evidence": [
-        "frontend/src/backendExtensions.d.ts (Post/Comment interfaces and post/comment methods)"
-      ]
-    },
-    {
-      "description": "Role-management backend interface methods added as \"future\" capabilities in frontend types without corresponding requested/implemented backend work.",
-      "reason": "REQ-34 requires wiring role management end-to-end; adding placeholder type declarations for \"future implementation\" is extra/unrequested and risks mismatching actual backend.",
-      "evidence": [
-        "frontend/src/backendExtensions.d.ts (\"Future moderation capabilities\" and \"Extended backend interface (for future implementation)\")"
+        "backend/migration.mo",
+        "backend/main.mo"
       ]
     }
   ],
-  "confidence": 0.64,
+  "confidence": 0.68,
   "changed_files": [
     "backend/main.mo",
     "backend/migration.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/backendExtensions.d.ts",
-    "frontend/src/components/auth/BannedScreen.tsx",
+    "frontend/src/App.tsx",
+    "frontend/src/components/connections/ConnectionsThreadList.tsx",
+    "frontend/src/components/connections/NewThreadComposer.tsx",
+    "frontend/src/components/connections/RepliesList.tsx",
+    "frontend/src/components/connections/ReplyComposer.tsx",
+    "frontend/src/components/helloCorner/HelloCornerMessageItem.tsx",
+    "frontend/src/components/helloCorner/HelloCornerMessageList.tsx",
+    "frontend/src/components/helloCorner/HelloCornerReactions.tsx",
+    "frontend/src/components/helloCorner/HelloCornerSection.tsx",
     "frontend/src/components/layout/AppShell.tsx",
     "frontend/src/components/moderation/ReportsSection.tsx",
-    "frontend/src/components/moderation/RoleManagementSection.tsx",
     "frontend/src/components/moderation/UserActionsSection.tsx",
     "frontend/src/components/nav/AuthedNav.tsx",
+    "frontend/src/hooks/useConnectionsForum.ts",
+    "frontend/src/hooks/useHelloCorner.ts",
     "frontend/src/hooks/useModeration.ts",
     "frontend/src/hooks/useQueries.ts",
+    "frontend/src/pages/Connections.tsx",
+    "frontend/src/pages/ConnectionsThreadDetail.tsx",
+    "frontend/src/pages/Directory.tsx",
+    "frontend/src/pages/Feed.tsx",
     "frontend/src/pages/Moderation.tsx",
+    "frontend/src/pages/PostDetail.tsx",
+    "frontend/src/pages/ProfileMe.tsx",
+    "frontend/src/pages/ProfileView.tsx",
+    "frontend/src/utils/connectionsForumErrors.ts",
     "project_state.json"
   ]
 }

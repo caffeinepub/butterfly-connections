@@ -1,39 +1,37 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent } from '@/components/ui/card';
-import { Shield, AlertTriangle, Loader2 } from 'lucide-react';
-import { useIsCallerModerator } from '../hooks/useModeration';
-import ReportsSection from '../components/moderation/ReportsSection';
-import UserActionsSection from '../components/moderation/UserActionsSection';
-import RoleManagementSection from '../components/moderation/RoleManagementSection';
-import { useIsCallerAdmin } from '../hooks/useQueries';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Shield } from 'lucide-react';
+import { useGetCallerPermissions } from '../hooks/useModeration';
 
 export default function Moderation() {
-  const { isModerator, isLoading: moderatorLoading } = useIsCallerModerator();
-  const { data: isAdmin, isLoading: adminLoading } = useIsCallerAdmin();
-
-  const isLoading = moderatorLoading || adminLoading;
+  const { data: permissions, isLoading } = useGetCallerPermissions();
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center space-y-4">
-          <Loader2 className="w-12 h-12 text-[oklch(0.65_0.15_320)] animate-spin mx-auto" />
-          <p className="text-[oklch(0.45_0.06_320)]">Checking permissions...</p>
+          <div className="w-12 h-12 border-4 border-[oklch(0.75_0.15_320)] border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-[oklch(0.45_0.06_320)]">Loading...</p>
         </div>
       </div>
     );
   }
 
-  if (!isModerator) {
+  if (!permissions?.isAdmin && !permissions?.isModerator) {
     return (
-      <div className="max-w-2xl mx-auto">
+      <div className="space-y-8">
+        <div className="text-center space-y-4">
+          <h1 className="text-4xl font-bold text-[oklch(0.35_0.08_320)]">Moderation</h1>
+        </div>
+
         <Card className="bg-white/70 backdrop-blur-sm border-[oklch(0.90_0.02_320)]">
-          <CardContent className="py-12">
-            <div className="text-center space-y-4">
-              <AlertTriangle className="w-16 h-16 mx-auto text-[oklch(0.65_0.15_320)]" />
-              <h2 className="text-2xl font-bold text-[oklch(0.35_0.08_320)]">Access Denied</h2>
+          <CardContent className="p-12 text-center space-y-4">
+            <Shield className="w-16 h-16 mx-auto text-[oklch(0.65_0.15_320)]" />
+            <div>
+              <h3 className="text-lg font-semibold text-[oklch(0.35_0.08_320)] mb-2">
+                Access Denied
+              </h3>
               <p className="text-[oklch(0.45_0.06_320)]">
-                You don't have permission to access the moderation panel. This area is restricted to community moderators and administrators.
+                You don't have permission to access moderation tools.
               </p>
             </div>
           </CardContent>
@@ -45,49 +43,25 @@ export default function Moderation() {
   return (
     <div className="space-y-8">
       <div className="text-center space-y-4">
-        <div className="flex items-center justify-center gap-3">
-          <Shield className="w-10 h-10 text-[oklch(0.65_0.15_320)]" />
-          <h1 className="text-4xl font-bold text-[oklch(0.35_0.08_320)]">Moderation Dashboard</h1>
-        </div>
+        <h1 className="text-4xl font-bold text-[oklch(0.35_0.08_320)]">Moderation</h1>
         <p className="text-[oklch(0.45_0.06_320)] max-w-2xl mx-auto">
-          Review reports, manage user actions, and keep the community safe.
+          Manage reports and community safety.
         </p>
       </div>
 
-      <Tabs defaultValue="reports" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 max-w-2xl mx-auto">
-          <TabsTrigger value="reports">Reports</TabsTrigger>
-          <TabsTrigger value="users">User Actions</TabsTrigger>
-          <TabsTrigger value="roles" disabled={!isAdmin}>
-            Role Management {!isAdmin && '(Admin)'}
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="reports" className="space-y-6 mt-6">
-          <ReportsSection />
-        </TabsContent>
-
-        <TabsContent value="users" className="space-y-6 mt-6">
-          <UserActionsSection />
-        </TabsContent>
-
-        <TabsContent value="roles" className="space-y-6 mt-6">
-          {isAdmin ? (
-            <RoleManagementSection />
-          ) : (
-            <Card className="bg-white/70 backdrop-blur-sm border-[oklch(0.90_0.02_320)]">
-              <CardContent className="py-12">
-                <div className="text-center space-y-4">
-                  <AlertTriangle className="w-16 h-16 mx-auto text-[oklch(0.65_0.15_320)]" />
-                  <p className="text-[oklch(0.45_0.06_320)]">
-                    Role management is restricted to administrators only.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-      </Tabs>
+      <Card className="bg-white/70 backdrop-blur-sm border-[oklch(0.90_0.02_320)]">
+        <CardHeader>
+          <CardTitle className="text-[oklch(0.35_0.08_320)]">Moderation Tools</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-12 space-y-4">
+            <Shield className="w-16 h-16 mx-auto text-[oklch(0.65_0.15_320)]" />
+            <p className="text-[oklch(0.45_0.06_320)]">
+              Moderation features are temporarily unavailable. Please check back later!
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

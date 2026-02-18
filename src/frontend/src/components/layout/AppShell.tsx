@@ -25,7 +25,7 @@ export default function AppShell({ children }: AppShellProps) {
 
   // Show banned screen if user is banned
   if (banStatus?.isBanned) {
-    return <BannedScreen reason={banStatus.reason} />;
+    return <BannedScreen reason={banStatus.reason || undefined} />;
   }
 
   // Normal app shell for non-banned users

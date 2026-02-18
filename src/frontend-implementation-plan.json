@@ -1,95 +1,101 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Moderation dashboard, moderator access gating, and banned-user UX (frontend)",
+  "title": "Butterfly Connections – Connections Forum Board (Frontend)",
   "requirements": [
     {
-      "id": "REQ-33",
-      "summary": "Upgrade the existing Moderation page into a functional dashboard UI with sections for Reports, User Actions (ban/unban), and an admin-only Role Management section, accessible to moderators and admins with an Access Denied state for others.",
+      "id": "REQ-36",
+      "summary": "Replace the placeholder Connections page with a forum-style thread list and a clear “New thread” creation action.",
       "acceptanceCriteria": [
-        "The existing Moderation page is upgraded from the placeholder state to a functional dashboard layout with clear sections (e.g., tabs or stacked cards) for Reports, User Actions (ban/unban), and Role Management (admin-only).",
-        "The dashboard is visible/accessible to moderators as well as admins (do not restrict it to only `useIsCallerAdmin()` as it is today).",
-        "If a non-moderator/non-admin visits the moderation route, show an English ‘Access Denied’ message similar to the existing pattern.",
-        "All new user-facing strings on the moderation dashboard are in English."
+        "Visiting /connections no longer shows the “coming soon” placeholder card.",
+        "The Connections page shows a thread list UI (thread title/preview, author, created time, and reply count at minimum).",
+        "The page includes an obvious action to create a new thread (e.g., “New thread”).",
+        "All user-facing UI text is in English."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/Moderation.tsx",
+          "path": "frontend/src/pages/Connections.tsx",
           "operation": "modify",
-          "description": "Replace the admin-only placeholder panel with a dashboard layout (e.g., tabs/stacked cards) containing: (1) Reports review/action section, (2) User Actions section for ban/unban by Principal, and (3) an admin-only Role Management section for appointing/removing moderators; gate the page with moderator-or-admin access and show the existing-style English Access Denied UI for others. Use the authorization component’s access-control patterns for role-based UI gating and error handling; verify the component's usage instructions before implementing."
+          "description": "Replace the placeholder UI with a forum-board layout: header + thread list (title, preview, author display, created time, reply count) plus an obvious “New thread” action. Use existing shadcn/ui components by composition (do not edit frontend/src/components/ui). Verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/components/moderation/ReportsSection.tsx",
+          "path": "frontend/src/components/connections/ConnectionsThreadList.tsx",
           "operation": "create",
-          "description": "Create a Reports section component that lists reports (with loading/empty/error states) and provides primary moderation actions (e.g., mark reviewed/resolve, and if supported by backend capability, remove reported content). Use the authorization component’s guidance for handling authorization traps gracefully; verify the component's usage instructions before implementing."
+          "description": "Add a reusable thread list component for /connections that renders loading/empty/error states and a list of thread rows/cards with title/preview/author/time/reply count. Use shadcn/ui components by composition (e.g., Card, Button, Skeleton). Verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/components/moderation/UserActionsSection.tsx",
+          "path": "frontend/src/components/connections/NewThreadComposer.tsx",
           "operation": "create",
-          "description": "Create a User Actions section component that accepts a Principal text input, validates/parses it, shows current ban state/reason if available, and provides ban/unban actions with success/error feedback. Use the authorization component’s RBAC concepts to keep actions consistent with caller permissions; verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/moderation/RoleManagementSection.tsx",
-          "operation": "create",
-          "description": "Create an admin-only Role Management section component to list current moderators and allow granting/revoking moderator role for a target Principal, with clear success/error states and query refresh. Use the authorization component’s role-based access control patterns; verify the component's usage instructions before implementing."
+          "description": "Add a thread composer (modal or inline) that collects title and content, validates required fields, and triggers thread creation. Use shadcn/ui components by composition (e.g., Dialog, Input, Textarea, Button). Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
-      "id": "REQ-34",
-      "summary": "Add type-safe React Query hooks and nav/route gating to wire the moderation dashboard to backend moderation APIs for roles, reports, bans, and moderator management.",
+      "id": "REQ-39",
+      "summary": "Add React Query hooks for listing/creating threads and replies, and wire them into the Connections UI so updates occur without full reload.",
       "acceptanceCriteria": [
-        "Frontend has React Query hooks for: checking caller role/permissions, listing moderators (admin-only), banning/unbanning a Principal, and granting/revoking moderator role (admin-only).",
-        "Frontend updates the nav and route gating so the Moderation link appears for moderators and admins (not only admins).",
-        "Frontend displays success/error states for moderation actions (ban/unban, role changes, content removal) and refreshes relevant queries after mutations.",
-        "TypeScript types used by the React app reflect the new backend role/ban endpoints (extend the generated backend types via the existing `frontend/src/backendExtensions.d.ts` approach as needed)."
+        "Frontend has React Query query + mutation hooks to list threads, create thread, fetch thread details, list replies, and create reply.",
+        "After creating a thread, the thread list updates to include the new thread.",
+        "After creating a reply, the reply list updates and the reply count displayed in the thread list (if shown) is consistent after refresh/invalidation.",
+        "No edits are made to immutable paths listed in SYSTEM_CONTEXT."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useModeration.ts",
+          "path": "frontend/src/hooks/useConnectionsForum.ts",
           "operation": "create",
-          "description": "Add React Query hooks/mutations for moderation: caller role/permissions (including moderator support), listing reports, resolving reports, optional content removal (if backend capability exists), ban/unban by Principal, admin-only list moderators, and admin-only grant/revoke moderator role; ensure hooks invalidate/refresh the relevant queries after mutations. Use the authorization component’s guidance for access control UI and handling backend traps; verify the component's usage instructions before implementing."
+          "description": "Create React Query hooks backed by the actor methods in frontend/src/backend.d.ts: listThreads (with offset/limit), createThread, getThread, getThreadReplies, and replyToThread. Ensure queries are disabled until the actor is available (follow the pattern used in existing hooks). On mutations, invalidate the relevant caches so lists/details update without reload."
         },
         {
-          "path": "frontend/src/backendExtensions.d.ts",
+          "path": "frontend/src/pages/Connections.tsx",
           "operation": "modify",
-          "description": "Extend frontend backend typings to remain type-safe for new moderation capabilities: merge/extend UserRole to include a moderator role, and augment backendInterface with any new role/ban/moderation methods used by hooks (e.g., listModerators, grant/revoke moderator, caller ban-status methods, and any content-removal capability if implemented). Use the authorization component’s role model as the source of truth for UI permissions; verify the component's usage instructions before implementing."
+          "description": "Wire the new hooks into the Connections page: fetch and render threads via React Query; trigger createThread via mutation; invalidate and refresh the list after success; surface readable English error messages for authorization/forbidden traps (avoid raw stack traces). Also ensure UI stays consistent with auth gating provided by the selected authorization system (Internet Identity + actor lifecycle); verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/components/nav/AuthedNav.tsx",
+          "path": "frontend/src/components/connections/ConnectionsThreadList.tsx",
           "operation": "modify",
-          "description": "Update Moderation nav link visibility to appear for moderators and admins (not only `useIsCallerAdmin()`); use the new role/permissions hook(s) and keep UX consistent while role checks are loading. Use the authorization component’s RBAC patterns for determining navigation visibility; verify the component's usage instructions before implementing."
+          "description": "Integrate hook results (loading, error, data) and support pagination UI (e.g., “Load more”) using offset/limit. If displaying reply counts, ensure they reflect refreshed data after mutations (via invalidation)."
         },
         {
-          "path": "frontend/src/pages/Moderation.tsx",
-          "operation": "modify",
-          "description": "Wire the dashboard sections to the new React Query hooks (reports list/actions, ban/unban, moderator list/grant/revoke) and ensure success/error states trigger appropriate query invalidations and UI refresh. Use the authorization component’s error-handling guidance for authorization traps; verify the component's usage instructions before implementing."
+          "path": "frontend/src/utils/connectionsForumErrors.ts",
+          "operation": "create",
+          "description": "Add a small utility to normalize backend trap/authorization errors into readable English messages (e.g., unauthorized/forbidden/network issues) for reuse in Connections list and thread detail views."
         }
       ]
     },
     {
-      "id": "REQ-35",
-      "summary": "Add a consistent banned-user experience that shows a dedicated English banned message after authentication and blocks access to protected community pages/actions without getting stuck in loading states.",
+      "id": "REQ-40",
+      "summary": "Add a thread detail view reachable from /connections that shows the original post, replies, and a reply composer with proper empty/error states.",
       "acceptanceCriteria": [
-        "When a banned user attempts to use the app after authentication, the UI shows a dedicated ‘You are banned’ message and blocks access to protected community pages/actions.",
-        "The UI does not get stuck on spinners; it handles backend ‘banned’ errors gracefully and predictably.",
-        "The banned message is shown consistently (e.g., in the main protected shell or via a dedicated route) and does not leak moderation controls."
+        "From /connections, selecting a thread opens a dedicated thread view (either via a new route or an in-page panel) that displays the thread content and its replies.",
+        "The thread detail view includes a reply composer that posts a reply and clears on success.",
+        "Empty states exist for: no threads available, and no replies yet.",
+        "Unauthorized/forbidden errors from the backend are handled with a readable English message in the UI (not a raw stack trace)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/auth/BannedScreen.tsx",
+          "path": "frontend/src/pages/ConnectionsThreadDetail.tsx",
           "operation": "create",
-          "description": "Create a dedicated, English-only banned screen component that explains the account is banned and that community features are unavailable; include a clear sign-out action using existing auth utilities and ensure the screen does not display moderation controls. Use the authorization component’s guidance for access-denied patterns and trap handling; verify the component's usage instructions before implementing."
+          "description": "Create a dedicated thread detail page that loads a thread (title/content/author/time) and its replies, shows an empty state when no replies exist, and includes a reply composer that clears on success. Use React Query hooks from useConnectionsForum and readable error messaging from the Connections forum error utility. Use shadcn/ui components by composition (Card, Button, Textarea, Separator, etc.). Verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/components/layout/AppShell.tsx",
-          "operation": "modify",
-          "description": "Add a ban-status gate for authenticated pages: query the caller’s ban status via a React Query hook and, when banned, render the dedicated BannedScreen instead of the normal app shell/nav to avoid leaking moderation controls; ensure loading/error states are handled predictably without infinite spinners. Use the authorization component’s guidance for handling authorization-related traps and displaying access-restricted UX; verify the component's usage instructions before implementing."
+          "path": "frontend/src/components/connections/ReplyComposer.tsx",
+          "operation": "create",
+          "description": "Add a reply composer component used by the thread detail page to submit a reply via mutation, disable while submitting, and clear input on success. Use shadcn/ui components by composition. Verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/hooks/useModeration.ts",
+          "path": "frontend/src/components/connections/RepliesList.tsx",
+          "operation": "create",
+          "description": "Add a replies list component used by the thread detail page that renders loading/empty/error states and displays replies with author and created time."
+        },
+        {
+          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Add/extend a caller ban-status React Query hook (and optional ban reason retrieval) used by the AppShell ban gate; ensure it behaves well during actor initialization and does not cause stuck loading states. Use the authorization component’s error-handling guidance for backend traps; verify the component's usage instructions before implementing."
+          "description": "Register a new authenticated route for the thread detail view (e.g., /connections/$threadId) wrapped in AppShell, and ensure navigation from the Connections thread list links to it."
+        },
+        {
+          "path": "frontend/src/pages/Connections.tsx",
+          "operation": "modify",
+          "description": "Update thread list items to navigate to the new thread detail route when selected (using TanStack Router Link), ensuring the detail view is reachable from /connections."
         }
       ]
     }

@@ -1,83 +1,104 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import type { HelloCornerMessage, MessageId, ReactionType, ExternalBlob } from '../backend';
 
-// List Hello Corner messages with pagination
-export function useListHelloCornerMessages(offset: bigint = 0n, limit: bigint = 20n) {
+// Stub types for missing Hello Corner functionality
+type MessageId = bigint;
+type ReactionType = { __kind__: 'like' } | { __kind__: 'dislike' };
+type ExternalBlob = any;
+
+type HelloCornerMessage = {
+  id: MessageId;
+  author: any;
+  text: string;
+  photo: ExternalBlob | null;
+  video: ExternalBlob | null;
+  createdAt: bigint;
+};
+
+type ReactionCounts = {
+  likes: bigint;
+  dislikes: bigint;
+  userReaction: ReactionType | null;
+};
+
+// List messages - Stub implementation
+export function useListHelloCornerMessages(offset: number, limit: number) {
   const { actor, isFetching: actorFetching } = useActor();
 
-  return useQuery({
-    queryKey: ['helloCornerMessages', offset.toString(), limit.toString()],
+  return useQuery<HelloCornerMessage[]>({
+    queryKey: ['helloCornerMessages', offset, limit],
     queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
-      return actor.listHelloCornerMessages(offset, limit);
+      // Stub: Return empty array since backend doesn't have Hello Corner
+      return [];
     },
     enabled: !!actor && !actorFetching,
   });
 }
 
-// Create a new Hello Corner message with optional photo and video
+// Create message - Stub implementation
 export function useCreateHelloCornerMessage() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({ text, photo, video }: { text: string; photo: ExternalBlob | null; video: ExternalBlob | null }) => {
-      if (!actor) throw new Error('Actor not available');
-      return actor.createHelloCornerMessage(text, photo, video);
+      // Stub: Throw error since backend doesn't have Hello Corner
+      throw new Error('Hello Corner feature not available');
     },
     onSuccess: () => {
-      // Invalidate all message queries to refresh the list
       queryClient.invalidateQueries({ queryKey: ['helloCornerMessages'] });
-      queryClient.invalidateQueries({ queryKey: ['messageReactions'] });
     },
   });
 }
 
-// Get reactions for a specific message
-export function useGetMessageReactions(messageId: MessageId) {
+// Get reactions - Stub implementation
+export function useGetMessageReactions(messageId: MessageId | null) {
   const { actor, isFetching: actorFetching } = useActor();
 
-  return useQuery({
-    queryKey: ['messageReactions', messageId.toString()],
+  return useQuery<ReactionCounts>({
+    queryKey: ['messageReactions', messageId?.toString()],
     queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
-      return actor.getMessageReactions(messageId);
+      // Stub: Return zero counts
+      return {
+        likes: BigInt(0),
+        dislikes: BigInt(0),
+        userReaction: null,
+      };
     },
-    enabled: !!actor && !actorFetching,
+    enabled: !!actor && !actorFetching && messageId !== null,
   });
 }
 
-// React to a message (like or dislike)
+// React to message - Stub implementation
 export function useReactToMessage() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({ messageId, reaction }: { messageId: MessageId; reaction: ReactionType }) => {
-      if (!actor) throw new Error('Actor not available');
-      await actor.reactToMessage(messageId, reaction);
+      // Stub: Throw error since backend doesn't have Hello Corner
+      throw new Error('Hello Corner feature not available');
     },
     onSuccess: (_, variables) => {
-      // Invalidate reactions for this specific message
       queryClient.invalidateQueries({ queryKey: ['messageReactions', variables.messageId.toString()] });
+      queryClient.invalidateQueries({ queryKey: ['helloCornerMessages'] });
     },
   });
 }
 
-// Remove reaction from a message
+// Remove reaction - Stub implementation
 export function useRemoveReaction() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (messageId: MessageId) => {
-      if (!actor) throw new Error('Actor not available');
-      await actor.removeReaction(messageId);
+      // Stub: Throw error since backend doesn't have Hello Corner
+      throw new Error('Hello Corner feature not available');
     },
     onSuccess: (_, messageId) => {
-      // Invalidate reactions for this specific message
       queryClient.invalidateQueries({ queryKey: ['messageReactions', messageId.toString()] });
+      queryClient.invalidateQueries({ queryKey: ['helloCornerMessages'] });
     },
   });
 }

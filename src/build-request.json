@@ -1,119 +1,125 @@
 {
   "kind": "build_request",
-  "title": "Add banning, moderator appointments, and a dedicated moderation dashboard",
+  "title": "Turn My Connections into a forum-style threaded board",
   "projectName": "Butterfly Connections",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-31",
-      "text": "Implement user banning in the backend so admins/moderators can ban and unban specific principals, and banned users are prevented from accessing and participating in community features.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-1"
-        ],
-        "quotes": [
-          "I'd like to add banning users, appointing other moderators, or a dedicated moderation dashboard please"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Backend exposes admin/moderator-only methods to ban and unban a user identified by Principal.",
-        "Backend exposes a method to check whether a given Principal is currently banned (and/or returns ban status as part of a caller status endpoint).",
-        "All existing user actions that require authenticated user access (e.g., eligibility confirmation, profile updates, browsing, posting Hello Corner messages, reacting, reporting) reject requests from banned users with a clear error/trap message.",
-        "Banned users cannot access moderation actions unless they are the owner/admin and you explicitly decide to allow owner access; document and implement a single consistent rule.",
-        "Ban state persists across canister upgrades (use stable state; add/adjust backend/migration.mo only if required by current stable layout)."
-      ]
-    },
-    {
-      "id": "REQ-32",
-      "text": "Add moderator role management in the backend so the owner/admin can appoint and remove additional moderators, and the app can distinguish at least: regular user, moderator, and admin/owner.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-1"
-        ],
-        "quotes": [
-          "I'd like to add banning users, appointing other moderators, or a dedicated moderation dashboard please"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Backend supports granting and revoking moderator privileges for a target Principal using an admin-only API.",
-        "Backend provides queries to (a) return the caller’s role and (b) list current moderators (admin-only).",
-        "Existing authorization checks are updated so moderation capabilities (e.g., reviewing reports/removing content, bans) are available to moderators as well as admins, while role-management (appoint/remove moderators) remains admin-only.",
-        "Role state persists across canister upgrades (use stable state; add/adjust backend/migration.mo only if required by current stable layout)."
-      ]
-    },
-    {
-      "id": "REQ-33",
-      "text": "Build a dedicated Moderation Dashboard UI that is accessible to moderators and admins, and includes sections for (1) reviewing reports and taking action and (2) user moderation actions including banning/unbanning; include a separate admin-only section for appointing/removing moderators.",
+      "id": "REQ-36",
+      "text": "Replace the current placeholder “My Connections” page with a forum-board experience that supports browsing thread-style posts created within the Connections area.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "recent-messages-1"
         ],
         "quotes": [
-          "I'd like to add banning users, appointing other moderators, or a dedicated moderation dashboard please"
+          "can you make the My connections like a fourm board where there is a thread like posting"
         ]
       },
       "acceptanceCriteria": [
-        "The existing Moderation page is upgraded from the placeholder state to a functional dashboard layout with clear sections (e.g., tabs or stacked cards) for Reports, User Actions (ban/unban), and Role Management (admin-only).",
-        "The dashboard is visible/accessible to moderators as well as admins (do not restrict it to only `useIsCallerAdmin()` as it is today).",
-        "If a non-moderator/non-admin visits the moderation route, show an English ‘Access Denied’ message similar to the existing pattern.",
-        "All new user-facing strings on the moderation dashboard are in English."
+        "Visiting /connections no longer shows the “coming soon” placeholder card.",
+        "The Connections page shows a thread list UI (thread title/preview, author, created time, and reply count at minimum).",
+        "The page includes an obvious action to create a new thread (e.g., “New thread”).",
+        "All user-facing UI text is in English."
       ]
     },
     {
-      "id": "REQ-34",
-      "text": "Wire the moderation dashboard to backend APIs using React Query hooks (queries + mutations) for listing reports (if available), removing content, banning/unbanning users, and appointing/removing moderators, keeping frontend-backend types type-safe.",
-      "target": "both",
+      "id": "REQ-37",
+      "text": "Implement backend storage and APIs for a Connections forum board with threads and replies, where only authenticated, eligible, non-banned users can create content and read content.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "recent-messages-1"
         ],
         "quotes": [
-          "I'd like to add banning users, appointing other moderators, or a dedicated moderation dashboard please"
+          "can you make the My connections like a fourm board where there is a thread like posting"
         ]
       },
       "acceptanceCriteria": [
-        "Frontend has React Query hooks for: checking caller role/permissions, listing moderators (admin-only), banning/unbanning a Principal, and granting/revoking moderator role (admin-only).",
-        "Frontend updates the nav and route gating so the Moderation link appears for moderators and admins (not only admins).",
-        "Frontend displays success/error states for moderation actions (ban/unban, role changes, content removal) and refreshes relevant queries after mutations.",
-        "TypeScript types used by the React app reflect the new backend role/ban endpoints (extend the generated backend types via the existing `frontend/src/backendExtensions.d.ts` approach as needed)."
+        "Backend exposes query/update methods to: create a connection-thread, list connection-threads (with pagination), get a single thread by id, create a reply within a thread, and list replies for a thread.",
+        "All Connections forum methods enforce the same access gating used elsewhere: caller must be a permitted #user and must not be banned (returning clear trap errors when blocked).",
+        "Thread IDs and reply IDs are stable and can be used by the frontend to retrieve specific threads/replies."
       ]
     },
     {
-      "id": "REQ-35",
-      "text": "Add a clear banned-user UX so that when a banned user signs in they are shown an explicit English message that their account is banned and they cannot access community features.",
+      "id": "REQ-38",
+      "text": "Limit visibility of Connections forum board content to the user’s connection network: only the thread author and the author’s accepted connections can view and reply to that author’s threads.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "recent-messages-1"
+        ],
+        "quotes": [
+          "make the My connections like a fourm board where there is a thread like posting"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When listing threads, the caller only receives threads authored by (a) the caller or (b) principals present in the caller’s contacts list (connections).",
+        "When fetching a thread or listing its replies, the backend rejects access unless the caller is allowed to view that thread under the same rule.",
+        "When creating a reply, the backend rejects the action unless the caller is allowed to view/reply to that thread under the same rule."
+      ]
+    },
+    {
+      "id": "REQ-39",
+      "text": "Add React Query hooks for Connections forum threads and replies, and wire them into the Connections page so thread creation and replying update the UI without a full page reload.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "recent-messages-1"
         ],
         "quotes": [
-          "I'd like to add banning users, appointing other moderators, or a dedicated moderation dashboard please"
+          "thread like posting"
         ]
       },
       "acceptanceCriteria": [
-        "When a banned user attempts to use the app after authentication, the UI shows a dedicated ‘You are banned’ message and blocks access to protected community pages/actions.",
-        "The UI does not get stuck on spinners; it handles backend ‘banned’ errors gracefully and predictably.",
-        "The banned message is shown consistently (e.g., in the main protected shell or via a dedicated route) and does not leak moderation controls."
+        "Frontend has React Query query + mutation hooks to list threads, create thread, fetch thread details, list replies, and create reply.",
+        "After creating a thread, the thread list updates to include the new thread.",
+        "After creating a reply, the reply list updates and the reply count displayed in the thread list (if shown) is consistent after refresh/invalidation.",
+        "No edits are made to immutable paths listed in SYSTEM_CONTEXT."
+      ]
+    },
+    {
+      "id": "REQ-40",
+      "text": "Add a thread detail view accessible from the Connections thread list, showing the original thread post and a reply thread beneath it, with a reply composer.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "recent-messages-1"
+        ],
+        "quotes": [
+          "where there is a thread like posting"
+        ]
+      },
+      "acceptanceCriteria": [
+        "From /connections, selecting a thread opens a dedicated thread view (either via a new route or an in-page panel) that displays the thread content and its replies.",
+        "The thread detail view includes a reply composer that posts a reply and clears on success.",
+        "Empty states exist for: no threads available, and no replies yet.",
+        "Unauthorized/forbidden errors from the backend are handled with a readable English message in the UI (not a raw stack trace)."
       ]
     }
   ],
   "constraints": [
-    "Respect the single-actor backend architecture: all Motoko logic must live in backend/main.mo.",
-    "Only add/update backend/migration.mo if needed to preserve existing stable state during upgrade (conditional migration policy).",
-    "Do not edit frontend immutable paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui (compose existing UI components instead).",
-    "Use English for all user-facing text."
+    "Backend must remain a single-actor Motoko canister with all logic in backend/main.mo.",
+    "Do not edit files under frontend/src/components/ui (read-only Shadcn components); compose them instead.",
+    "Do not edit frontend immutable paths listed in SYSTEM_CONTEXT."
   ],
   "nonGoals": [
-    "Implementing an appeals workflow or automated ban expiry (timeouts) unless explicitly requested later.",
-    "Building real-time moderation updates (no WebSockets).",
-    "Automated content scanning/AI moderation.",
-    "Email/SMS notifications about bans or moderator changes."
+    "Do not implement Progressive Web App (PWA) / “phone app” installability in this change.",
+    "Do not replace or redesign the existing global Feed/Hello Corner features as part of this request.",
+    "Do not implement full Reddit-like features such as upvotes/downvotes, sub-boards/categories, search, or moderation tooling specifically for Connections threads unless explicitly requested later."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
   }
 }

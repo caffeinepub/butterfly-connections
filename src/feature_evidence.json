@@ -2,13 +2,12 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-build-a-dedicated-moderation-dashboard-ui-that-is-accessible-to-moderators-and-admins-and-includes-sections-for-1-reviewing-reports-and-taking-action-and-2-user-moderation-actions-including-banning-unbanning-include-a-separate-admin-only-section-for-appointing-removing-moderators",
-      "featureTitle": "Build a dedicated Moderation Dashboard UI that is accessible to moderators and admins, and includes sections for (1) reviewing reports and taking action and (2) user moderation actions including banning/unbanning; include a separate admin-only section for appointing/removing moderators.",
+      "featureId": "feature-replace-the-current-placeholder-my-connections-page-with-a-forum-board-experience-that-supports-browsing-thread-style-posts-created-within-the-connections-area",
+      "featureTitle": "Replace the current placeholder “My Connections” page with a forum-board experience that supports browsing thread-style posts created within the Connections area.",
       "files": [
-        "frontend/src/components/moderation/ReportsSection.tsx",
-        "frontend/src/components/moderation/RoleManagementSection.tsx",
-        "frontend/src/components/moderation/UserActionsSection.tsx",
-        "frontend/src/pages/Moderation.tsx"
+        "frontend/src/components/connections/ConnectionsThreadList.tsx",
+        "frontend/src/components/connections/NewThreadComposer.tsx",
+        "frontend/src/pages/Connections.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -20,18 +19,18 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-33"
+        "REQ-36"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-wire-the-moderation-dashboard-to-backend-apis-using-react-query-hooks-queries-mutations-for-listing-reports-if-available-removing-content-banning-unbanning-users-and-appointing-removing-moderators-keeping-frontend-backend-types-type-safe",
-      "featureTitle": "Wire the moderation dashboard to backend APIs using React Query hooks (queries + mutations) for listing reports (if available), removing content, banning/unbanning users, and appointing/removing moderators, keeping frontend-backend types type-safe.",
+      "featureId": "feature-add-react-query-hooks-for-connections-forum-threads-and-replies-and-wire-them-into-the-connections-page-so-thread-creation-and-replying-update-the-ui-without-a-full-page-reload",
+      "featureTitle": "Add React Query hooks for Connections forum threads and replies, and wire them into the Connections page so thread creation and replying update the UI without a full page reload.",
       "files": [
-        "frontend/src/backendExtensions.d.ts",
-        "frontend/src/components/nav/AuthedNav.tsx",
-        "frontend/src/hooks/useModeration.ts",
-        "frontend/src/pages/Moderation.tsx"
+        "frontend/src/components/connections/ConnectionsThreadList.tsx",
+        "frontend/src/hooks/useConnectionsForum.ts",
+        "frontend/src/pages/Connections.tsx",
+        "frontend/src/utils/connectionsForumErrors.ts"
       ],
       "components": [
         "authorization@4.0.0",
@@ -43,17 +42,19 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-34"
+        "REQ-39"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-a-clear-banned-user-ux-so-that-when-a-banned-user-signs-in-they-are-shown-an-explicit-english-message-that-their-account-is-banned-and-they-cannot-access-community-features",
-      "featureTitle": "Add a clear banned-user UX so that when a banned user signs in they are shown an explicit English message that their account is banned and they cannot access community features.",
+      "featureId": "feature-add-a-thread-detail-view-accessible-from-the-connections-thread-list-showing-the-original-thread-post-and-a-reply-thread-beneath-it-with-a-reply-composer",
+      "featureTitle": "Add a thread detail view accessible from the Connections thread list, showing the original thread post and a reply thread beneath it, with a reply composer.",
       "files": [
-        "frontend/src/components/auth/BannedScreen.tsx",
-        "frontend/src/components/layout/AppShell.tsx",
-        "frontend/src/hooks/useModeration.ts"
+        "frontend/src/App.tsx",
+        "frontend/src/components/connections/RepliesList.tsx",
+        "frontend/src/components/connections/ReplyComposer.tsx",
+        "frontend/src/pages/Connections.tsx",
+        "frontend/src/pages/ConnectionsThreadDetail.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -65,7 +66,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-35"
+        "REQ-40"
       ],
       "confidence": "high"
     }

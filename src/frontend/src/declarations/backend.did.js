@@ -24,62 +24,28 @@ export const UserRole = IDL.Variant({
   'user' : IDL.Null,
   'guest' : IDL.Null,
 });
-export const ExternalBlob = IDL.Vec(IDL.Nat8);
-export const CommunityProfile = IDL.Record({
-  'bio' : IDL.Text,
-  'seekingMentorship' : IDL.Bool,
-  'displayName' : IDL.Text,
-  'profilePhoto' : IDL.Opt(ExternalBlob),
-  'tags' : IDL.Vec(IDL.Text),
-  'pronouns' : IDL.Text,
-  'openToMentoring' : IDL.Bool,
-  'supporterOfCommunity' : IDL.Bool,
-  'avatar' : IDL.Opt(ExternalBlob),
-});
-export const MessageId = IDL.Nat;
-export const ReportId = IDL.Nat;
-export const ReportStatus = IDL.Variant({
-  'pending' : IDL.Null,
-  'reviewed' : IDL.Null,
-});
-export const ReasonType = IDL.Variant({
-  'violation' : IDL.Null,
-  'troll' : IDL.Null,
-  'other' : IDL.Text,
-  'lecture' : IDL.Null,
-  'insensitive' : IDL.Null,
-  'offTopic' : IDL.Null,
-});
-export const ReportType = IDL.Variant({
-  'message' : IDL.Null,
-  'profile' : IDL.Null,
-});
-export const Report = IDL.Record({
-  'id' : ReportId,
-  'status' : ReportStatus,
-  'contentId' : IDL.Text,
-  'reasonType' : ReasonType,
-  'description' : IDL.Text,
-  'reportType' : ReportType,
+export const ThreadId = IDL.Nat;
+export const ConnectionRequest = IDL.Record({
+  'to' : IDL.Principal,
+  'from' : IDL.Principal,
   'timestamp' : IDL.Int,
-  'reporter' : IDL.Principal,
 });
-export const HelloCornerMessage = IDL.Record({
-  'id' : MessageId,
-  'video' : IDL.Opt(ExternalBlob),
+export const ReplyId = IDL.Nat;
+export const ConnectionsReply = IDL.Record({
+  'id' : ReplyId,
+  'content' : IDL.Text,
   'createdAt' : IDL.Int,
-  'text' : IDL.Text,
   'author' : IDL.Principal,
-  'photo' : IDL.Opt(ExternalBlob),
+  'threadId' : ThreadId,
 });
-export const PaginatedMessages = IDL.Record({
-  'nextOffset' : IDL.Nat,
-  'hasMore' : IDL.Bool,
-  'messages' : IDL.Vec(HelloCornerMessage),
-});
-export const ReactionType = IDL.Variant({
-  'like' : IDL.Null,
-  'dislike' : IDL.Null,
+export const ConnectionsThread = IDL.Record({
+  'id' : ThreadId,
+  'title' : IDL.Text,
+  'content' : IDL.Text,
+  'createdAt' : IDL.Int,
+  'author' : IDL.Principal,
+  'isVisible' : IDL.Bool,
+  'replies' : IDL.Vec(ConnectionsReply),
 });
 
 export const idlService = IDL.Service({
@@ -110,99 +76,34 @@ export const idlService = IDL.Service({
     ),
   '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
-  'acceptContact' : IDL.Func([IDL.Principal], [], []),
-  'addContact' : IDL.Func([IDL.Principal], [], []),
+  'acceptConnectionRequest' : IDL.Func([IDL.Principal], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
-  'banUser' : IDL.Func([IDL.Principal, IDL.Text], [], []),
-  'browseMentors' : IDL.Func(
-      [
-        IDL.Record({
-          'supporterOfCommunity' : IDL.Bool,
-          'mentorship' : IDL.Bool,
-          'mentoring' : IDL.Bool,
-        }),
-      ],
-      [IDL.Vec(CommunityProfile)],
-      ['query'],
-    ),
-  'confirmEligibility' : IDL.Func([], [], []),
-  'createHelloCornerMessage' : IDL.Func(
-      [IDL.Text, IDL.Opt(ExternalBlob), IDL.Opt(ExternalBlob)],
-      [MessageId],
-      [],
-    ),
-  'getBanReason' : IDL.Func([IDL.Principal], [IDL.Text], ['query']),
+  'createThread' : IDL.Func([IDL.Text, IDL.Text], [ThreadId], []),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
-  'getCommunityProfile' : IDL.Func(
-      [IDL.Principal],
-      [CommunityProfile],
+  'getPendingConnectionRequests' : IDL.Func(
+      [],
+      [IDL.Vec(ConnectionRequest)],
       ['query'],
     ),
-  'getContacts' : IDL.Func(
+  'getThread' : IDL.Func([ThreadId], [ConnectionsThread], ['query']),
+  'getThreadReplies' : IDL.Func(
+      [ThreadId],
+      [IDL.Vec(ConnectionsReply)],
+      ['query'],
+    ),
+  'getUserConnections' : IDL.Func(
       [IDL.Principal],
       [IDL.Vec(IDL.Principal)],
       ['query'],
     ),
-  'getLectureReports' : IDL.Func(
-      [IDL.Nat, IDL.Nat],
-      [IDL.Vec(Report)],
-      ['query'],
-    ),
-  'getMessageReactions' : IDL.Func(
-      [MessageId],
-      [IDL.Record({ 'dislikeCount' : IDL.Nat, 'likeCount' : IDL.Nat })],
-      ['query'],
-    ),
-  'getPendingTrollReports' : IDL.Func(
-      [IDL.Nat, IDL.Nat],
-      [
-        IDL.Record({
-          'pendingTrollReports' : IDL.Vec(Report),
-          'totalCount' : IDL.Nat,
-        }),
-      ],
-      ['query'],
-    ),
-  'getProfilePhoto' : IDL.Func(
-      [IDL.Principal],
-      [IDL.Opt(ExternalBlob)],
-      ['query'],
-    ),
-  'getReport' : IDL.Func([ReportId], [Report], ['query']),
-  'getUserReportStats' : IDL.Func(
-      [IDL.Principal],
-      [
-        IDL.Record({
-          'profileReportCount' : IDL.Nat,
-          'messageReportCount' : IDL.Nat,
-        }),
-      ],
-      ['query'],
-    ),
-  'hasConfirmedEligibility' : IDL.Func([], [IDL.Bool], ['query']),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
-  'isUserBannedForAdminCheck' : IDL.Func(
-      [IDL.Principal],
-      [IDL.Bool],
-      ['query'],
-    ),
-  'listHelloCornerMessages' : IDL.Func(
+  'listThreads' : IDL.Func(
       [IDL.Nat, IDL.Nat],
-      [PaginatedMessages],
+      [IDL.Vec(ConnectionsThread)],
       ['query'],
     ),
-  'listReports' : IDL.Func([IDL.Nat, IDL.Nat], [IDL.Vec(Report)], ['query']),
-  'reactToMessage' : IDL.Func([MessageId, ReactionType], [], []),
-  'removeReaction' : IDL.Func([MessageId], [], []),
-  'reportContent' : IDL.Func(
-      [IDL.Text, ReportType, ReasonType, IDL.Text],
-      [],
-      [],
-    ),
-  'resolveReport' : IDL.Func([ReportId], [], []),
-  'unbanUser' : IDL.Func([IDL.Principal], [], []),
-  'updateCommunityProfile' : IDL.Func([CommunityProfile], [], []),
-  'uploadProfilePhoto' : IDL.Func([ExternalBlob], [], []),
+  'replyToThread' : IDL.Func([ThreadId, IDL.Text], [ReplyId], []),
+  'sendConnectionRequest' : IDL.Func([IDL.Principal], [], []),
 });
 
 export const idlInitArgs = [];
@@ -224,60 +125,29 @@ export const idlFactory = ({ IDL }) => {
     'user' : IDL.Null,
     'guest' : IDL.Null,
   });
-  const ExternalBlob = IDL.Vec(IDL.Nat8);
-  const CommunityProfile = IDL.Record({
-    'bio' : IDL.Text,
-    'seekingMentorship' : IDL.Bool,
-    'displayName' : IDL.Text,
-    'profilePhoto' : IDL.Opt(ExternalBlob),
-    'tags' : IDL.Vec(IDL.Text),
-    'pronouns' : IDL.Text,
-    'openToMentoring' : IDL.Bool,
-    'supporterOfCommunity' : IDL.Bool,
-    'avatar' : IDL.Opt(ExternalBlob),
-  });
-  const MessageId = IDL.Nat;
-  const ReportId = IDL.Nat;
-  const ReportStatus = IDL.Variant({
-    'pending' : IDL.Null,
-    'reviewed' : IDL.Null,
-  });
-  const ReasonType = IDL.Variant({
-    'violation' : IDL.Null,
-    'troll' : IDL.Null,
-    'other' : IDL.Text,
-    'lecture' : IDL.Null,
-    'insensitive' : IDL.Null,
-    'offTopic' : IDL.Null,
-  });
-  const ReportType = IDL.Variant({
-    'message' : IDL.Null,
-    'profile' : IDL.Null,
-  });
-  const Report = IDL.Record({
-    'id' : ReportId,
-    'status' : ReportStatus,
-    'contentId' : IDL.Text,
-    'reasonType' : ReasonType,
-    'description' : IDL.Text,
-    'reportType' : ReportType,
+  const ThreadId = IDL.Nat;
+  const ConnectionRequest = IDL.Record({
+    'to' : IDL.Principal,
+    'from' : IDL.Principal,
     'timestamp' : IDL.Int,
-    'reporter' : IDL.Principal,
   });
-  const HelloCornerMessage = IDL.Record({
-    'id' : MessageId,
-    'video' : IDL.Opt(ExternalBlob),
+  const ReplyId = IDL.Nat;
+  const ConnectionsReply = IDL.Record({
+    'id' : ReplyId,
+    'content' : IDL.Text,
     'createdAt' : IDL.Int,
-    'text' : IDL.Text,
     'author' : IDL.Principal,
-    'photo' : IDL.Opt(ExternalBlob),
+    'threadId' : ThreadId,
   });
-  const PaginatedMessages = IDL.Record({
-    'nextOffset' : IDL.Nat,
-    'hasMore' : IDL.Bool,
-    'messages' : IDL.Vec(HelloCornerMessage),
+  const ConnectionsThread = IDL.Record({
+    'id' : ThreadId,
+    'title' : IDL.Text,
+    'content' : IDL.Text,
+    'createdAt' : IDL.Int,
+    'author' : IDL.Principal,
+    'isVisible' : IDL.Bool,
+    'replies' : IDL.Vec(ConnectionsReply),
   });
-  const ReactionType = IDL.Variant({ 'like' : IDL.Null, 'dislike' : IDL.Null });
   
   return IDL.Service({
     '_caffeineStorageBlobIsLive' : IDL.Func(
@@ -307,99 +177,34 @@ export const idlFactory = ({ IDL }) => {
       ),
     '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
-    'acceptContact' : IDL.Func([IDL.Principal], [], []),
-    'addContact' : IDL.Func([IDL.Principal], [], []),
+    'acceptConnectionRequest' : IDL.Func([IDL.Principal], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
-    'banUser' : IDL.Func([IDL.Principal, IDL.Text], [], []),
-    'browseMentors' : IDL.Func(
-        [
-          IDL.Record({
-            'supporterOfCommunity' : IDL.Bool,
-            'mentorship' : IDL.Bool,
-            'mentoring' : IDL.Bool,
-          }),
-        ],
-        [IDL.Vec(CommunityProfile)],
-        ['query'],
-      ),
-    'confirmEligibility' : IDL.Func([], [], []),
-    'createHelloCornerMessage' : IDL.Func(
-        [IDL.Text, IDL.Opt(ExternalBlob), IDL.Opt(ExternalBlob)],
-        [MessageId],
-        [],
-      ),
-    'getBanReason' : IDL.Func([IDL.Principal], [IDL.Text], ['query']),
+    'createThread' : IDL.Func([IDL.Text, IDL.Text], [ThreadId], []),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
-    'getCommunityProfile' : IDL.Func(
-        [IDL.Principal],
-        [CommunityProfile],
+    'getPendingConnectionRequests' : IDL.Func(
+        [],
+        [IDL.Vec(ConnectionRequest)],
         ['query'],
       ),
-    'getContacts' : IDL.Func(
+    'getThread' : IDL.Func([ThreadId], [ConnectionsThread], ['query']),
+    'getThreadReplies' : IDL.Func(
+        [ThreadId],
+        [IDL.Vec(ConnectionsReply)],
+        ['query'],
+      ),
+    'getUserConnections' : IDL.Func(
         [IDL.Principal],
         [IDL.Vec(IDL.Principal)],
         ['query'],
       ),
-    'getLectureReports' : IDL.Func(
-        [IDL.Nat, IDL.Nat],
-        [IDL.Vec(Report)],
-        ['query'],
-      ),
-    'getMessageReactions' : IDL.Func(
-        [MessageId],
-        [IDL.Record({ 'dislikeCount' : IDL.Nat, 'likeCount' : IDL.Nat })],
-        ['query'],
-      ),
-    'getPendingTrollReports' : IDL.Func(
-        [IDL.Nat, IDL.Nat],
-        [
-          IDL.Record({
-            'pendingTrollReports' : IDL.Vec(Report),
-            'totalCount' : IDL.Nat,
-          }),
-        ],
-        ['query'],
-      ),
-    'getProfilePhoto' : IDL.Func(
-        [IDL.Principal],
-        [IDL.Opt(ExternalBlob)],
-        ['query'],
-      ),
-    'getReport' : IDL.Func([ReportId], [Report], ['query']),
-    'getUserReportStats' : IDL.Func(
-        [IDL.Principal],
-        [
-          IDL.Record({
-            'profileReportCount' : IDL.Nat,
-            'messageReportCount' : IDL.Nat,
-          }),
-        ],
-        ['query'],
-      ),
-    'hasConfirmedEligibility' : IDL.Func([], [IDL.Bool], ['query']),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
-    'isUserBannedForAdminCheck' : IDL.Func(
-        [IDL.Principal],
-        [IDL.Bool],
-        ['query'],
-      ),
-    'listHelloCornerMessages' : IDL.Func(
+    'listThreads' : IDL.Func(
         [IDL.Nat, IDL.Nat],
-        [PaginatedMessages],
+        [IDL.Vec(ConnectionsThread)],
         ['query'],
       ),
-    'listReports' : IDL.Func([IDL.Nat, IDL.Nat], [IDL.Vec(Report)], ['query']),
-    'reactToMessage' : IDL.Func([MessageId, ReactionType], [], []),
-    'removeReaction' : IDL.Func([MessageId], [], []),
-    'reportContent' : IDL.Func(
-        [IDL.Text, ReportType, ReasonType, IDL.Text],
-        [],
-        [],
-      ),
-    'resolveReport' : IDL.Func([ReportId], [], []),
-    'unbanUser' : IDL.Func([IDL.Principal], [], []),
-    'updateCommunityProfile' : IDL.Func([CommunityProfile], [], []),
-    'uploadProfilePhoto' : IDL.Func([ExternalBlob], [], []),
+    'replyToThread' : IDL.Func([ThreadId, IDL.Text], [ReplyId], []),
+    'sendConnectionRequest' : IDL.Func([IDL.Principal], [], []),
   });
 };
 

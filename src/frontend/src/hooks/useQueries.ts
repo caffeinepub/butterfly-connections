@@ -1,17 +1,39 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import type { CommunityProfile, UserRole, ReportType, ReasonType } from '../backend';
+import type { UserRole } from '../backend';
 import { Principal } from '@dfinity/principal';
 
-// Eligibility
+// Stub types for missing backend functionality
+type CommunityProfile = {
+  displayName: string;
+  pronouns: string;
+  bio: string;
+  tags: string[];
+  avatar: Uint8Array | null;
+  profilePhoto: Uint8Array | null;
+  openToMentoring: boolean;
+  seekingMentorship: boolean;
+  supporterOfCommunity: boolean;
+};
+
+type ReportType = { __kind__: 'profile' } | { __kind__: 'message' };
+type ReasonType = 
+  | { __kind__: 'lecture' }
+  | { __kind__: 'troll' }
+  | { __kind__: 'offTopic' }
+  | { __kind__: 'violation' }
+  | { __kind__: 'insensitive' }
+  | { __kind__: 'other'; value: string };
+
+// Eligibility - Stub implementation (always returns true for now)
 export function useGetCallerEligibility() {
   const { actor, isFetching: actorFetching } = useActor();
 
   const query = useQuery<boolean>({
     queryKey: ['eligibility'],
     queryFn: async () => {
-      if (!actor) return false;
-      return actor.hasConfirmedEligibility();
+      // Stub: Always return true since backend doesn't have eligibility system
+      return true;
     },
     enabled: !!actor && !actorFetching,
     retry: false,
@@ -30,8 +52,8 @@ export function useConfirmEligibility() {
 
   return useMutation({
     mutationFn: async () => {
-      if (!actor) throw new Error('Actor not available');
-      await actor.confirmEligibility();
+      // Stub: No-op since backend doesn't have eligibility system
+      return;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['eligibility'] });
@@ -39,21 +61,15 @@ export function useConfirmEligibility() {
   });
 }
 
-// Profile
+// Profile - Stub implementation
 export function useGetCommunityProfile(userId?: string) {
   const { actor, isFetching: actorFetching } = useActor();
 
   return useQuery<CommunityProfile | null>({
     queryKey: ['profile', userId],
     queryFn: async () => {
-      if (!actor || !userId) return null;
-      try {
-        const principal = Principal.fromText(userId);
-        return await actor.getCommunityProfile(principal);
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-        return null;
-      }
+      // Stub: Return null since backend doesn't have profile system
+      return null;
     },
     enabled: !!actor && !actorFetching && !!userId,
     retry: false,
@@ -66,8 +82,8 @@ export function useUpdateCommunityProfile() {
 
   return useMutation({
     mutationFn: async (profile: CommunityProfile) => {
-      if (!actor) throw new Error('Actor not available');
-      await actor.updateCommunityProfile(profile);
+      // Stub: No-op since backend doesn't have profile system
+      throw new Error('Profile system not available');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
@@ -75,25 +91,21 @@ export function useUpdateCommunityProfile() {
   });
 }
 
-// Directory
+// Directory - Stub implementation
 export function useBrowseMentors(filters: { mentoring: boolean; mentorship: boolean; supporterOfCommunity: boolean }) {
   const { actor, isFetching: actorFetching } = useActor();
 
   return useQuery<CommunityProfile[]>({
     queryKey: ['mentors', filters],
     queryFn: async () => {
-      if (!actor) return [];
-      // If all filters are false, return empty array to avoid unnecessary backend call
-      if (!filters.mentoring && !filters.mentorship && !filters.supporterOfCommunity) {
-        return [];
-      }
-      return actor.browseMentors(filters);
+      // Stub: Return empty array since backend doesn't have profile/directory system
+      return [];
     },
     enabled: !!actor && !actorFetching,
   });
 }
 
-// Connections
+// Connections - Stub implementation (backend has different connection system)
 export function useGetContacts(userId?: string) {
   const { actor, isFetching: actorFetching } = useActor();
 
@@ -103,7 +115,7 @@ export function useGetContacts(userId?: string) {
       if (!actor || !userId) return [];
       try {
         const principal = Principal.fromText(userId);
-        return await actor.getContacts(principal);
+        return await actor.getUserConnections(principal);
       } catch (error) {
         console.error('Error fetching contacts:', error);
         return [];
@@ -120,7 +132,7 @@ export function useAddContact() {
   return useMutation({
     mutationFn: async (toPrincipal: Principal) => {
       if (!actor) throw new Error('Actor not available');
-      await actor.addContact(toPrincipal);
+      await actor.sendConnectionRequest(toPrincipal);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contacts'] });
@@ -128,7 +140,7 @@ export function useAddContact() {
   });
 }
 
-// Reporting
+// Reporting - Stub implementation
 export function useReportContent() {
   const { actor } = useActor();
 
@@ -144,8 +156,8 @@ export function useReportContent() {
       reasonType: ReasonType; 
       description: string;
     }) => {
-      if (!actor) throw new Error('Actor not available');
-      await actor.reportContent(contentId, contentType, reasonType, description);
+      // Stub: No-op since backend doesn't have reporting system
+      throw new Error('Reporting system not available');
     },
   });
 }

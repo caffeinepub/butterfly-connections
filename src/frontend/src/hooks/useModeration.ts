@@ -1,54 +1,69 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
+import type { UserRole } from '../backend';
 import { Principal } from '@dfinity/principal';
-import type { Report, UserRole } from '../backend';
 
-// Caller role and permissions
-export function useGetCallerRole() {
+// Stub types for missing moderation functionality
+type ReportId = bigint;
+type ReportStatus = { __kind__: 'pending' } | { __kind__: 'reviewed' };
+type ReportType = { __kind__: 'profile' } | { __kind__: 'message' };
+type ReasonType = 
+  | { __kind__: 'lecture' }
+  | { __kind__: 'troll' }
+  | { __kind__: 'offTopic' }
+  | { __kind__: 'violation' }
+  | { __kind__: 'insensitive' }
+  | { __kind__: 'other'; value: string };
+
+type Report = {
+  id: ReportId;
+  reporter: Principal;
+  contentId: string;
+  reportType: ReportType;
+  reasonType: ReasonType;
+  description: string;
+  status: ReportStatus;
+  timestamp: bigint;
+};
+
+// Get caller permissions
+export function useGetCallerPermissions() {
   const { actor, isFetching: actorFetching } = useActor();
 
-  return useQuery<UserRole>({
-    queryKey: ['callerRole'],
+  return useQuery<{ isAdmin: boolean; isModerator: boolean }>({
+    queryKey: ['callerPermissions'],
     queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
-      return actor.getCallerUserRole();
+      if (!actor) return { isAdmin: false, isModerator: false };
+      const isAdmin = await actor.isCallerAdmin();
+      return { isAdmin, isModerator: false };
     },
     enabled: !!actor && !actorFetching,
-    retry: false,
   });
 }
 
-export function useIsCallerModerator() {
-  const { data: role, isLoading } = useGetCallerRole();
-  // Currently only admins have moderation access until moderator role is added to backend
-  return {
-    isModerator: role === 'admin',
-    isLoading,
-  };
-}
-
-// Reports
-export function useListReports(skip: number = 0, take: number = 20) {
+// List reports - Stub implementation
+export function useListReports(skip: number, take: number) {
   const { actor, isFetching: actorFetching } = useActor();
 
   return useQuery<Report[]>({
     queryKey: ['reports', skip, take],
     queryFn: async () => {
-      if (!actor) return [];
-      return actor.listReports(BigInt(skip), BigInt(take));
+      // Stub: Return empty array since backend doesn't have reporting system
+      return [];
     },
     enabled: !!actor && !actorFetching,
   });
 }
 
+// Resolve report - Stub implementation
 export function useResolveReport() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (reportId: bigint) => {
-      if (!actor) throw new Error('Actor not available');
-      await actor.resolveReport(reportId);
+    mutationFn: async (reportId: ReportId) => {
+      // Stub: Throw error since backend doesn't have reporting system
+      throw new Error('Reporting system not available');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['reports'] });
@@ -56,16 +71,15 @@ export function useResolveReport() {
   });
 }
 
-// Ban management
+// Ban user - Stub implementation
 export function useBanUser() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ user, reason }: { user: string; reason: string }) => {
-      if (!actor) throw new Error('Actor not available');
-      const principal = Principal.fromText(user);
-      await actor.banUser(principal, reason);
+    mutationFn: async ({ principal, reason }: { principal: Principal; reason: string }) => {
+      // Stub: Throw error since backend doesn't have ban system
+      throw new Error('Ban system not available');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['banStatus'] });
@@ -73,15 +87,15 @@ export function useBanUser() {
   });
 }
 
+// Unban user - Stub implementation
 export function useUnbanUser() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (user: string) => {
-      if (!actor) throw new Error('Actor not available');
-      const principal = Principal.fromText(user);
-      await actor.unbanUser(principal);
+    mutationFn: async (principal: Principal) => {
+      // Stub: Throw error since backend doesn't have ban system
+      throw new Error('Ban system not available');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['banStatus'] });
@@ -89,50 +103,30 @@ export function useUnbanUser() {
   });
 }
 
-export function useGetBanStatus(user: string | null) {
+// Check ban status - Stub implementation
+export function useCheckBanStatus(principalText: string | null) {
   const { actor, isFetching: actorFetching } = useActor();
 
-  return useQuery<{ isBanned: boolean; reason?: string }>({
-    queryKey: ['banStatus', user],
+  return useQuery<{ isBanned: boolean; reason: string | null }>({
+    queryKey: ['banStatus', principalText],
     queryFn: async () => {
-      if (!actor || !user) return { isBanned: false };
-      try {
-        const principal = Principal.fromText(user);
-        const isBanned = await actor.isUserBannedForAdminCheck(principal);
-        if (isBanned) {
-          const reason = await actor.getBanReason(principal);
-          return { isBanned: true, reason };
-        }
-        return { isBanned: false };
-      } catch (error) {
-        return { isBanned: false };
-      }
+      // Stub: Return not banned since backend doesn't have ban system
+      return { isBanned: false, reason: null };
     },
-    enabled: !!actor && !actorFetching && !!user,
+    enabled: !!actor && !actorFetching && !!principalText,
   });
 }
 
-// Caller ban status (for banned screen)
+// Get caller ban status - Stub implementation
 export function useGetCallerBanStatus() {
   const { actor, isFetching: actorFetching } = useActor();
 
-  return useQuery<{ isBanned: boolean; reason?: string }>({
+  return useQuery<{ isBanned: boolean; reason: string | null }>({
     queryKey: ['callerBanStatus'],
     queryFn: async () => {
-      if (!actor) return { isBanned: false };
-      try {
-        // Try to get caller role - if banned, this will trap
-        await actor.getCallerUserRole();
-        return { isBanned: false };
-      } catch (error: any) {
-        // Check if error message indicates ban
-        if (error?.message?.includes('banned') || error?.message?.includes('Banned')) {
-          return { isBanned: true, reason: 'Your account has been banned' };
-        }
-        return { isBanned: false };
-      }
+      // Stub: Return not banned since backend doesn't have ban system
+      return { isBanned: false, reason: null };
     },
     enabled: !!actor && !actorFetching,
-    retry: false,
   });
 }

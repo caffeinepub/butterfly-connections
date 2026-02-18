@@ -10,55 +10,29 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
-export interface CommunityProfile {
-  'bio' : string,
-  'seekingMentorship' : boolean,
-  'displayName' : string,
-  'profilePhoto' : [] | [ExternalBlob],
-  'tags' : Array<string>,
-  'pronouns' : string,
-  'openToMentoring' : boolean,
-  'supporterOfCommunity' : boolean,
-  'avatar' : [] | [ExternalBlob],
-}
-export type ExternalBlob = Uint8Array;
-export interface HelloCornerMessage {
-  'id' : MessageId,
-  'video' : [] | [ExternalBlob],
-  'createdAt' : bigint,
-  'text' : string,
-  'author' : Principal,
-  'photo' : [] | [ExternalBlob],
-}
-export type MessageId = bigint;
-export interface PaginatedMessages {
-  'nextOffset' : bigint,
-  'hasMore' : boolean,
-  'messages' : Array<HelloCornerMessage>,
-}
-export type ReactionType = { 'like' : null } |
-  { 'dislike' : null };
-export type ReasonType = { 'violation' : null } |
-  { 'troll' : null } |
-  { 'other' : string } |
-  { 'lecture' : null } |
-  { 'insensitive' : null } |
-  { 'offTopic' : null };
-export interface Report {
-  'id' : ReportId,
-  'status' : ReportStatus,
-  'contentId' : string,
-  'reasonType' : ReasonType,
-  'description' : string,
-  'reportType' : ReportType,
+export interface ConnectionRequest {
+  'to' : Principal,
+  'from' : Principal,
   'timestamp' : bigint,
-  'reporter' : Principal,
 }
-export type ReportId = bigint;
-export type ReportStatus = { 'pending' : null } |
-  { 'reviewed' : null };
-export type ReportType = { 'message' : null } |
-  { 'profile' : null };
+export interface ConnectionsReply {
+  'id' : ReplyId,
+  'content' : string,
+  'createdAt' : bigint,
+  'author' : Principal,
+  'threadId' : ThreadId,
+}
+export interface ConnectionsThread {
+  'id' : ThreadId,
+  'title' : string,
+  'content' : string,
+  'createdAt' : bigint,
+  'author' : Principal,
+  'isVisible' : boolean,
+  'replies' : Array<ConnectionsReply>,
+}
+export type ReplyId = bigint;
+export type ThreadId = bigint;
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
@@ -90,59 +64,18 @@ export interface _SERVICE {
   >,
   '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
-  'acceptContact' : ActorMethod<[Principal], undefined>,
-  'addContact' : ActorMethod<[Principal], undefined>,
+  'acceptConnectionRequest' : ActorMethod<[Principal], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
-  'banUser' : ActorMethod<[Principal, string], undefined>,
-  'browseMentors' : ActorMethod<
-    [
-      {
-        'supporterOfCommunity' : boolean,
-        'mentorship' : boolean,
-        'mentoring' : boolean,
-      },
-    ],
-    Array<CommunityProfile>
-  >,
-  'confirmEligibility' : ActorMethod<[], undefined>,
-  'createHelloCornerMessage' : ActorMethod<
-    [string, [] | [ExternalBlob], [] | [ExternalBlob]],
-    MessageId
-  >,
-  'getBanReason' : ActorMethod<[Principal], string>,
+  'createThread' : ActorMethod<[string, string], ThreadId>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
-  'getCommunityProfile' : ActorMethod<[Principal], CommunityProfile>,
-  'getContacts' : ActorMethod<[Principal], Array<Principal>>,
-  'getLectureReports' : ActorMethod<[bigint, bigint], Array<Report>>,
-  'getMessageReactions' : ActorMethod<
-    [MessageId],
-    { 'dislikeCount' : bigint, 'likeCount' : bigint }
-  >,
-  'getPendingTrollReports' : ActorMethod<
-    [bigint, bigint],
-    { 'pendingTrollReports' : Array<Report>, 'totalCount' : bigint }
-  >,
-  'getProfilePhoto' : ActorMethod<[Principal], [] | [ExternalBlob]>,
-  'getReport' : ActorMethod<[ReportId], Report>,
-  'getUserReportStats' : ActorMethod<
-    [Principal],
-    { 'profileReportCount' : bigint, 'messageReportCount' : bigint }
-  >,
-  'hasConfirmedEligibility' : ActorMethod<[], boolean>,
+  'getPendingConnectionRequests' : ActorMethod<[], Array<ConnectionRequest>>,
+  'getThread' : ActorMethod<[ThreadId], ConnectionsThread>,
+  'getThreadReplies' : ActorMethod<[ThreadId], Array<ConnectionsReply>>,
+  'getUserConnections' : ActorMethod<[Principal], Array<Principal>>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
-  'isUserBannedForAdminCheck' : ActorMethod<[Principal], boolean>,
-  'listHelloCornerMessages' : ActorMethod<[bigint, bigint], PaginatedMessages>,
-  'listReports' : ActorMethod<[bigint, bigint], Array<Report>>,
-  'reactToMessage' : ActorMethod<[MessageId, ReactionType], undefined>,
-  'removeReaction' : ActorMethod<[MessageId], undefined>,
-  'reportContent' : ActorMethod<
-    [string, ReportType, ReasonType, string],
-    undefined
-  >,
-  'resolveReport' : ActorMethod<[ReportId], undefined>,
-  'unbanUser' : ActorMethod<[Principal], undefined>,
-  'updateCommunityProfile' : ActorMethod<[CommunityProfile], undefined>,
-  'uploadProfilePhoto' : ActorMethod<[ExternalBlob], undefined>,
+  'listThreads' : ActorMethod<[bigint, bigint], Array<ConnectionsThread>>,
+  'replyToThread' : ActorMethod<[ThreadId, string], ReplyId>,
+  'sendConnectionRequest' : ActorMethod<[Principal], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

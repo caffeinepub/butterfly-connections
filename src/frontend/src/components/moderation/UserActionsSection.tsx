@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { AlertCircle, Ban, CheckCircle, Loader2, UserX } from 'lucide-react';
-import { useBanUser, useUnbanUser, useGetBanStatus } from '../../hooks/useModeration';
+import { useBanUser, useUnbanUser, useCheckBanStatus } from '../../hooks/useModeration';
 import { Principal } from '@dfinity/principal';
 
 export default function UserActionsSection() {
@@ -15,7 +15,7 @@ export default function UserActionsSection() {
   const [validPrincipal, setValidPrincipal] = useState<string | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
 
-  const { data: banStatus, isLoading: banStatusLoading } = useGetBanStatus(validPrincipal);
+  const { data: banStatus, isLoading: banStatusLoading } = useCheckBanStatus(validPrincipal);
   const banUser = useBanUser();
   const unbanUser = useUnbanUser();
 
@@ -40,7 +40,8 @@ export default function UserActionsSection() {
     if (!validPrincipal || !banReason.trim()) return;
 
     try {
-      await banUser.mutateAsync({ user: validPrincipal, reason: banReason.trim() });
+      const principal = Principal.fromText(validPrincipal);
+      await banUser.mutateAsync({ principal, reason: banReason.trim() });
       setBanReason('');
     } catch (error: any) {
       console.error('Failed to ban user:', error);
@@ -51,7 +52,8 @@ export default function UserActionsSection() {
     if (!validPrincipal) return;
 
     try {
-      await unbanUser.mutateAsync(validPrincipal);
+      const principal = Principal.fromText(validPrincipal);
+      await unbanUser.mutateAsync(principal);
     } catch (error: any) {
       console.error('Failed to unban user:', error);
     }

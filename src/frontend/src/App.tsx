@@ -8,6 +8,7 @@ import ProfileMe from './pages/ProfileMe';
 import ProfileView from './pages/ProfileView';
 import Directory from './pages/Directory';
 import Connections from './pages/Connections';
+import ConnectionsThreadDetail from './pages/ConnectionsThreadDetail';
 import Guidelines from './pages/Guidelines';
 import Moderation from './pages/Moderation';
 import PostDetail from './pages/PostDetail';
@@ -94,6 +95,16 @@ const connectionsRoute = createRoute({
   ),
 });
 
+const connectionsThreadDetailRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/connections/$threadId',
+  component: () => (
+    <AppShell>
+      <ConnectionsThreadDetail />
+    </AppShell>
+  ),
+});
+
 const guidelinesRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/guidelines',
@@ -123,6 +134,7 @@ const routeTree = rootRoute.addChildren([
   profileViewRoute,
   directoryRoute,
   connectionsRoute,
+  connectionsThreadDetailRoute,
   guidelinesRoute,
   moderationRoute,
 ]);
