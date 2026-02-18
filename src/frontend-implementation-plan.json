@@ -1,0 +1,433 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Initial build: Butterfly Connections (frontend)",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Add Internet Identity sign-in and protect all community routes behind authentication (except landing + age gate).",
+      "acceptanceCriteria": [
+        "Unauthenticated visitors can only see the landing page and age gate.",
+        "After successful Internet Identity login, the user is routed into the authenticated app area.",
+        "If a logged-out user navigates directly to an authenticated route, they are redirected to the landing/age gate flow."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/auth/LoginButton.tsx",
+          "operation": "create",
+          "description": "Create a reusable Internet Identity login/logout button composed on top of the existing useInternetIdentity hook. Use the authorization component guidance for login/logout UX and cache clearing; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/auth/RequireAuth.tsx",
+          "operation": "create",
+          "description": "Create a route/page guard that only renders children when Internet Identity is present; otherwise redirects to the landing/age gate flow. Use the authorization component guidance for handling unauthorized UI states; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire authentication-aware routing so that only the landing + age-gate flow is accessible without identity, and authenticated users are routed into the protected app area after login."
+        },
+        {
+          "path": "frontend/src/hooks/useAuth.ts",
+          "operation": "create",
+          "description": "Add a small compositional hook (wrapping useInternetIdentity) to expose isAuthenticated, principal string, and a single logout helper that also clears react-query caches (do not modify immutable auth hooks directly)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Implement a per-user 18+ eligibility gate that persists across sessions and blocks all community features until confirmed.",
+      "acceptanceCriteria": [
+        "The age gate requires an explicit confirmation (e.g., checkbox + confirm button) stating the user is 18+.",
+        "Users who have not confirmed 18+ cannot access feeds, posting, profiles, or any community pages.",
+        "The 18+ confirmation state persists per authenticated user and remains effective after refresh/re-login.",
+        "Users can sign out at any time."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useEligibility.ts",
+          "operation": "create",
+          "description": "Create react-query hooks that call backend capability hasConfirmedEligibility() and confirmEligibility() and expose loading/error states for gating UI."
+        },
+        {
+          "path": "frontend/src/components/auth/AgeGate.tsx",
+          "operation": "create",
+          "description": "Build the explicit 18+ confirmation UI (checkbox + confirm button) and submit confirmation via useEligibility hooks; include a sign-out action via the composed auth helper."
+        },
+        {
+          "path": "frontend/src/components/auth/RequireEligibility.tsx",
+          "operation": "create",
+          "description": "Create a guard that requires confirmed eligibility before rendering authenticated community routes; otherwise route to the age gate component."
+        },
+        {
+          "path": "frontend/src/pages/Landing.tsx",
+          "operation": "create",
+          "description": "Create the public landing page that introduces the platform and clearly communicates the 18+ requirement, and provides a call-to-action to sign in."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire the landing + age gate flow and apply RequireAuth + RequireEligibility to all community routes so eligibility is enforced before allowing access to community features."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Add community profiles (view/edit) with display name, pronouns, bio, tags, and avatar selection with defaults.",
+      "acceptanceCriteria": [
+        "A newly signed-in user is prompted to create/complete a basic profile before posting or connecting with others.",
+        "Users can view their own profile and edit the included fields.",
+        "Users can view other users’ profiles (public profile view).",
+        "Avatar has a usable default when no custom image is set."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useCommunityProfile.ts",
+          "operation": "create",
+          "description": "Create react-query hooks for profile read/update using backend capability getCommunityProfile() and updateCommunityProfile(); handle authorization failures gracefully per authorization guidance; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/profile/AvatarPicker.tsx",
+          "operation": "create",
+          "description": "Implement an avatar selector that supports choosing from the generated default avatar set and (when available) uploading a custom avatar using ExternalBlob. Use the blob-storage component to represent and render avatar images via ExternalBlob.getDirectURL(); verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/profile/ProfileEditor.tsx",
+          "operation": "create",
+          "description": "Create a profile edit form for display name, pronouns (free text), bio, tags (optional), mentorship flags, and avatar selection; save via useCommunityProfile mutation."
+        },
+        {
+          "path": "frontend/src/pages/ProfileMe.tsx",
+          "operation": "create",
+          "description": "Create the authenticated 'My Profile' page that loads the caller profile and allows editing via ProfileEditor; show default avatar when none is set."
+        },
+        {
+          "path": "frontend/src/pages/ProfileView.tsx",
+          "operation": "create",
+          "description": "Create a public-in-app profile view for another user (by principal in route params) showing display name, pronouns, bio, tags, mentorship flags, and avatar."
+        },
+        {
+          "path": "frontend/src/components/profile/RequireProfileComplete.tsx",
+          "operation": "create",
+          "description": "Add a guard that requires a minimally complete profile (e.g., displayName and basic fields) before allowing access to posting and connections features; route the user to My Profile to complete setup."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Register routes for My Profile and Profile View, and apply RequireProfileComplete to features that must be blocked until profile setup is complete (posting and connecting flows)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Implement posting UI: create post (text + optional image), global feed, post detail, and delete own posts.",
+      "acceptanceCriteria": [
+        "Authenticated 18+ users can create a post with text and optionally attach an image.",
+        "The feed displays recent posts with author, timestamp, and content.",
+        "Users can open a post detail view.",
+        "A user can delete their own posts; deleted posts no longer appear in feed or detail views."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/backendExtensions.d.ts",
+          "operation": "create",
+          "description": "Augment the frontend backendInterface typing with posting-related backend capabilities needed by the UI (feed, create, read, delete), so the frontend can be implemented and compiled while remaining aligned with future backend updates."
+        },
+        {
+          "path": "frontend/src/hooks/usePosts.ts",
+          "operation": "create",
+          "description": "Create react-query hooks for feed listing, post detail, create post, and delete post. For image attachments, use the blob-storage component (ExternalBlob) for upload and rendering via direct URLs; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/posts/PostComposer.tsx",
+          "operation": "create",
+          "description": "Build a post composer (text + optional image attachment) that submits via usePosts create mutation; show upload progress when using ExternalBlob.withUploadProgress. Use blob-storage component patterns; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/posts/PostCard.tsx",
+          "operation": "create",
+          "description": "Create a feed card showing author display name (and avatar), timestamp, content, optional image, and actions (open, report, delete if author)."
+        },
+        {
+          "path": "frontend/src/pages/Feed.tsx",
+          "operation": "create",
+          "description": "Create the Feed page combining PostComposer and the recent posts list; ensure it is only reachable for authenticated + eligible users and profile-complete where required."
+        },
+        {
+          "path": "frontend/src/pages/PostDetail.tsx",
+          "operation": "create",
+          "description": "Create the Post Detail page that shows the post and its comments thread (wired via REQ-5), and supports deleting the caller's own post."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Register routes for Feed and Post Detail under the authenticated/eligible app area and ensure direct navigation is protected by the auth + eligibility guards."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Add comments UI on posts: create, list thread chronologically, and delete own comment.",
+      "acceptanceCriteria": [
+        "Post detail view shows a list of comments in chronological order.",
+        "Authenticated 18+ users can add a comment to a post.",
+        "Users can delete their own comments; deleted comments are removed from display."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/backendExtensions.d.ts",
+          "operation": "modify",
+          "description": "Extend the type augmentation with comment-related backend capabilities required by the UI (list/create/delete comments for a post)."
+        },
+        {
+          "path": "frontend/src/hooks/useComments.ts",
+          "operation": "create",
+          "description": "Create react-query hooks to fetch a post's comment thread (chronological), create comment, and delete own comment; handle authorization failures gracefully per authorization guidance; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/comments/CommentComposer.tsx",
+          "operation": "create",
+          "description": "Create an add-comment input area used on Post Detail; submit via useComments create mutation."
+        },
+        {
+          "path": "frontend/src/components/comments/CommentList.tsx",
+          "operation": "create",
+          "description": "Create a chronological comment list component with delete action for the caller's own comments."
+        },
+        {
+          "path": "frontend/src/pages/PostDetail.tsx",
+          "operation": "modify",
+          "description": "Wire CommentList and CommentComposer into the post detail page, including delete actions and state updates after mutations."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Implement connections: send requests, accept/decline, list connections, and remove a connection.",
+      "acceptanceCriteria": [
+        "A user can send a connection request from another user’s profile.",
+        "The recipient can accept or decline the request.",
+        "Each user can view pending requests and current connections.",
+        "Users can remove an existing connection."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useConnections.ts",
+          "operation": "create",
+          "description": "Create react-query hooks for connections using backend capability addContact(), acceptContact(), and getContacts(); surface loading/error states and handle authorization failures gracefully per authorization guidance; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/connections/ConnectButton.tsx",
+          "operation": "create",
+          "description": "Add a connection request action for use on other users' profile pages; trigger addContact() and show success/error UI."
+        },
+        {
+          "path": "frontend/src/pages/Connections.tsx",
+          "operation": "create",
+          "description": "Create the Connections page showing current connections and actions to remove a connection; include UI sections for pending requests if available via backend capabilities (or present as disabled/placeholder until available)."
+        },
+        {
+          "path": "frontend/src/pages/ProfileView.tsx",
+          "operation": "modify",
+          "description": "Wire the ConnectButton into the other-user profile view so users can send connection requests from profiles."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Register and protect the Connections route within the authenticated/eligible app area."
+        }
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "summary": "Add mentorship flags on profile and a browse/filter directory to find mentors/peers by flags and tags.",
+      "acceptanceCriteria": [
+        "Users can set mentorship-related flags on their profile (open to mentoring / seeking mentorship).",
+        "A directory page lists users with mentorship flags and supports basic filtering (e.g., open to mentoring, seeking mentorship, tags).",
+        "Directory entries link to user profiles."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/profile/ProfileEditor.tsx",
+          "operation": "modify",
+          "description": "Include mentorship flags (openToMentoring, seekingMentorship) and tags editing in the profile editor (if not already covered) and persist via updateCommunityProfile()."
+        },
+        {
+          "path": "frontend/src/hooks/useDirectory.ts",
+          "operation": "create",
+          "description": "Create react-query hooks to browse mentorship directory using backend capability browseMentors() and support filtering inputs (mentoring/mentorship flags, plus client-side tag filtering if backend filtering is limited)."
+        },
+        {
+          "path": "frontend/src/pages/Directory.tsx",
+          "operation": "create",
+          "description": "Create the Directory page with filters (open to mentoring, seeking mentorship, tags) and a list of matching users; each entry links to the user profile route."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Register and protect the Directory route in the authenticated/eligible app area."
+        }
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "summary": "Add community guidelines, reporting (post/comment), and a moderation review/removal UI.",
+      "acceptanceCriteria": [
+        "A Community Guidelines page is accessible in the app navigation.",
+        "Users can report a post or comment with a required reason selected from a small preset list plus optional text.",
+        "A moderation page exists that lists reports and allows removing the reported post/comment.",
+        "Once removed by moderation, the content no longer appears in the app."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/Guidelines.tsx",
+          "operation": "create",
+          "description": "Create a Community Guidelines page with clear, English-only rules and safety expectations, accessible to authenticated users via navigation."
+        },
+        {
+          "path": "frontend/src/components/moderation/ReportDialog.tsx",
+          "operation": "create",
+          "description": "Create a report UI for posts/comments with a required preset reason and optional text, submitted via backend capability reportContent(contentId, reason). Use shadcn-ui dialog/form primitives for accessible UI; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useReporting.ts",
+          "operation": "create",
+          "description": "Create react-query mutation hooks for reporting content and for moderation removals (removeContent) with robust error handling for authorization failures per authorization guidance; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/backendExtensions.d.ts",
+          "operation": "modify",
+          "description": "Augment types with moderation/report listing backend capabilities needed for the moderation page (reports list + metadata) if not present in the current interface."
+        },
+        {
+          "path": "frontend/src/pages/Moderation.tsx",
+          "operation": "create",
+          "description": "Create a moderation review page that is only accessible to admins (using backend capability isCallerAdmin()) and allows removing the reported post/comment via removeContent(). Use authorization component guidance for admin-only UI; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/auth/RequireAdmin.tsx",
+          "operation": "create",
+          "description": "Create an admin-only guard for the moderation route by checking isCallerAdmin(); show an access denied state when unauthorized. Use authorization component guidance; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/posts/PostCard.tsx",
+          "operation": "modify",
+          "description": "Wire per-post reporting action to open ReportDialog with a post contentId."
+        },
+        {
+          "path": "frontend/src/components/comments/CommentList.tsx",
+          "operation": "modify",
+          "description": "Wire per-comment reporting action to open ReportDialog with a comment contentId."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Register Guidelines and Moderation routes under the authenticated/eligible app area, and protect the moderation route with RequireAdmin."
+        }
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "summary": "Apply a consistent cozy, warm, accessible visual theme across landing, gating, and community pages.",
+      "acceptanceCriteria": [
+        "UI uses a consistent color palette, typography, and spacing system across all pages.",
+        "Color contrast meets basic accessibility needs for primary text and buttons.",
+        "Landing page visually communicates the platform’s purpose and 18+ requirement in a calm, welcoming manner."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Define the global theme tokens (colors, typography, base spacing/layout defaults) and apply consistent styling across standard elements; keep accessibility/contrast in mind."
+        },
+        {
+          "path": "frontend/tailwind.config.js",
+          "operation": "modify",
+          "description": "Extend Tailwind theme with a warm, soft palette and typography scale to support consistent styling across the app."
+        },
+        {
+          "path": "frontend/src/components/layout/AppShell.tsx",
+          "operation": "create",
+          "description": "Create a shared layout wrapper for authenticated pages that applies consistent max-width, spacing, background treatment, and typography."
+        },
+        {
+          "path": "frontend/src/pages/Landing.tsx",
+          "operation": "modify",
+          "description": "Apply the cozy theme to the landing page content hierarchy, ensuring the purpose and 18+ requirement are clear and readable."
+        }
+      ]
+    },
+    {
+      "id": "REQ-10",
+      "summary": "Add persistent authenticated navigation with links to Feed, Directory, Connections, Profile, Guidelines, and Sign out.",
+      "acceptanceCriteria": [
+        "Authenticated area has a persistent navigation component.",
+        "All listed sections are reachable within 1 click from navigation.",
+        "Sign out returns the user to the landing/age gate experience."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/nav/AuthedNav.tsx",
+          "operation": "create",
+          "description": "Create a persistent authenticated navigation component with links to Feed, Directory, Connections, Profile, Guidelines, and a Sign out action. Use shadcn-ui navigation/menu primitives as appropriate; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/layout/AppShell.tsx",
+          "operation": "modify",
+          "description": "Include AuthedNav in the authenticated layout so navigation is persistent across all community pages."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Ensure all authenticated pages render within AppShell so navigation is present, and ensure sign-out routes back into the landing/age gate flow."
+        }
+      ]
+    },
+    {
+      "id": "REQ-11",
+      "summary": "Add required generated static images and wire them into landing/branding and default avatar behavior.",
+      "acceptanceCriteria": [
+        "Generated images are present under frontend/public/assets/generated.",
+        "Landing page uses the hero image and logo in a visually coherent way.",
+        "Default avatar set is used for users without custom avatars."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/public/assets/generated/butterfly-connections-logo.dim_1024x256.png",
+          "operation": "create",
+          "description": "Add the generated wordmark logo asset at frontend/public/assets/generated/butterfly-connections-logo.dim_1024x256.png and ensure it is referenced by the landing and/or navigation branding."
+        },
+        {
+          "path": "frontend/public/assets/generated/butterfly-hero-bg.dim_1920x1080.png",
+          "operation": "create",
+          "description": "Add the generated hero background asset at frontend/public/assets/generated/butterfly-hero-bg.dim_1920x1080.png and use it on the landing page for a welcoming feel."
+        },
+        {
+          "path": "frontend/public/assets/generated/default-avatar-set.dim_1024x1024.png",
+          "operation": "create",
+          "description": "Add the generated default avatar set sprite/atlas at frontend/public/assets/generated/default-avatar-set.dim_1024x1024.png and use it as the default avatar source when a user has no custom avatar."
+        },
+        {
+          "path": "frontend/public/assets/generated/butterfly-app-icon.dim_512x512.png",
+          "operation": "create",
+          "description": "Add the generated app icon at frontend/public/assets/generated/butterfly-app-icon.dim_512x512.png and wire it as favicon/app icon."
+        },
+        {
+          "path": "frontend/index.html",
+          "operation": "modify",
+          "description": "Wire frontend/public/assets/generated/butterfly-app-icon.dim_512x512.png as the favicon/app icon and ensure title/metadata align with Butterfly Connections."
+        },
+        {
+          "path": "frontend/src/pages/Landing.tsx",
+          "operation": "modify",
+          "description": "Render the hero background (frontend/public/assets/generated/butterfly-hero-bg.dim_1920x1080.png) and logo (frontend/public/assets/generated/butterfly-connections-logo.dim_1024x256.png) in a visually coherent way consistent with the theme."
+        },
+        {
+          "path": "frontend/src/components/profile/AvatarPicker.tsx",
+          "operation": "modify",
+          "description": "Use frontend/public/assets/generated/default-avatar-set.dim_1024x1024.png as the default avatar set source for users without a custom avatar selection."
+        }
+      ]
+    }
+  ]
+}

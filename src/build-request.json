@@ -1,0 +1,246 @@
+{
+  "kind": "build_request",
+  "title": "Initial build: Butterfly Connections (18+ trans community social platform)",
+  "projectName": "Butterfly Connections",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Implement Internet Identity sign-in and require all app features (except the landing + age gate) to be accessible only to authenticated users.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Butterfly Connections is a social media platform...",
+          "also it is only for people that are 18 and older"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Unauthenticated visitors can only see the landing page and age gate.",
+        "After successful Internet Identity login, the user is routed into the authenticated app area.",
+        "If a logged-out user navigates directly to an authenticated route, they are redirected to the landing/age gate flow."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Add an 18+ eligibility gate that users must explicitly confirm before they can access the authenticated community area; store the confirmation per user so they are not repeatedly prompted on subsequent sessions.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "also it is only for people that are 18 and older"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The age gate requires an explicit confirmation (e.g., checkbox + confirm button) stating the user is 18+.",
+        "Users who have not confirmed 18+ cannot access feeds, posting, profiles, or any community pages.",
+        "The 18+ confirmation state persists per authenticated user and remains effective after refresh/re-login.",
+        "Users can sign out at any time."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Create user profiles for community members, including: display name, pronouns (free-text), short bio, optional identity/interests tags, and an avatar image selector (use generated default avatars if the user does not upload).",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Find community with other trans, nonbinary, genderfluid, and questioning people who share similar experiences",
+          "Share your story in a space designed to be safe, affirming, and free from judgment"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A newly signed-in user is prompted to create/complete a basic profile before posting or connecting with others.",
+        "Users can view their own profile and edit the included fields.",
+        "Users can view other users’ profiles (public profile view).",
+        "Avatar has a usable default when no custom image is set."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Implement social posting (“Share your story”) with a global feed: create post, view feed, view single post, and delete own post; posts should support text content and an optional image attachment.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Share your story in a space designed to be safe, affirming, and free from judgment"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Authenticated 18+ users can create a post with text and optionally attach an image.",
+        "The feed displays recent posts with author, timestamp, and content.",
+        "Users can open a post detail view.",
+        "A user can delete their own posts; deleted posts no longer appear in feed or detail views."
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Add discussions via comments on posts: create comment and view comment thread per post; allow deleting own comment.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Explore identity through posts, discussions, and creative expression"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Post detail view shows a list of comments in chronological order.",
+        "Authenticated 18+ users can add a comment to a post.",
+        "Users can delete their own comments; deleted comments are removed from display."
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Implement friendship/connection features: allow users to send connection requests, accept/decline requests, view a list of connections, and remove a connection.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Build friendships with people who genuinely understand what it means to grow, transition, and transform"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A user can send a connection request from another user’s profile.",
+        "The recipient can accept or decline the request.",
+        "Each user can view pending requests and current connections.",
+        "Users can remove an existing connection."
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "text": "Implement a mentor/peer support directory: allow users to optionally mark themselves as “Open to mentoring” and/or “Seeking mentorship”, and provide a browse/filter page to find people by these flags and tags.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Connect with mentors and peers who can offer support, advice, or simply a listening ear"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Users can set mentorship-related flags on their profile (open to mentoring / seeking mentorship).",
+        "A directory page lists users with mentorship flags and supports basic filtering (e.g., open to mentoring, seeking mentorship, tags).",
+        "Directory entries link to user profiles."
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "text": "Add safety basics: a clear community guidelines page, per-post and per-comment reporting, and a simple moderation view to review reports and remove reported content.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "safe, affirming, and free from judgment"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A Community Guidelines page is accessible in the app navigation.",
+        "Users can report a post or comment with a required reason selected from a small preset list plus optional text.",
+        "A moderation page exists that lists reports and allows removing the reported post/comment.",
+        "Once removed by moderation, the content no longer appears in the app."
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "text": "Define and apply a coherent visual theme for Butterfly Connections that feels like a cozy, welcoming digital neighborhood (warm, soft palette; accessible typography; calm layout), and apply it consistently across landing, auth/age gate, feed, profiles, and directory pages.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Think of it as a cozy digital neighborhood"
+        ]
+      },
+      "acceptanceCriteria": [
+        "UI uses a consistent color palette, typography, and spacing system across all pages.",
+        "Color contrast meets basic accessibility needs for primary text and buttons.",
+        "Landing page visually communicates the platform’s purpose and 18+ requirement in a calm, welcoming manner."
+      ]
+    },
+    {
+      "id": "REQ-10",
+      "text": "Add basic navigation for authenticated users: links to Feed, Directory (Mentors/Peers), Connections, Profile, Guidelines, and Sign out.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "On Butterfly Connections, you can: ..."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Authenticated area has a persistent navigation component.",
+        "All listed sections are reachable within 1 click from navigation.",
+        "Sign out returns the user to the landing/age gate experience."
+      ]
+    },
+    {
+      "id": "REQ-11",
+      "text": "Generate required static image assets and render them in the UI (stored under frontend/public/assets/generated) for branding and a welcoming feel.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "The platform’s name reflects its purpose: like butterflies, we grow, shed old layers, and emerge brighter and more ourselves than ever."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Generated images are present under frontend/public/assets/generated.",
+        "Landing page uses the hero image and logo in a visually coherent way.",
+        "Default avatar set is used for users without custom avatars."
+      ]
+    }
+  ],
+  "constraints": [
+    "Use English for all user-facing text.",
+    "Backend must remain a single Motoko actor (no multi-canister backend design).",
+    "Do not edit frontend immutable paths (frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui); compose them instead.",
+    "No third-party authentication providers other than Internet Identity.",
+    "The app must enforce 18+ confirmation before allowing access to community features."
+  ],
+  "nonGoals": [
+    "Dating or matchmaking features.",
+    "Real-time chat or WebSocket-based messaging.",
+    "External database or non-IC storage integrations.",
+    "Third-party social logins (Google, Facebook, GitHub, Auth0).",
+    "Advanced content analysis (e.g., AI-based moderation)."
+  ],
+  "imageRequirements": {
+    "required": [
+      "Butterfly-themed wordmark logo with soft warm palette (butterfly-connections-logo.dim_1024x256.png)",
+      "Cozy abstract neighborhood-style hero background with subtle butterfly motifs (butterfly-hero-bg.dim_1920x1080.png)",
+      "Set of 6 simple inclusive default avatar illustrations, warm soft palette (default-avatar-set.dim_1024x1024.png)",
+      "Small butterfly icon for favicon/app icon, clean silhouette (butterfly-app-icon.dim_512x512.png)"
+    ],
+    "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
+  }
+}

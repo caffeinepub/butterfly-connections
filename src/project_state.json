@@ -1,0 +1,147 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "Butterfly Connections: an 18+ social community platform created by and for transgender, nonbinary, genderfluid, and questioning people to safely connect, share stories, explore identity via posts/discussions/creative expression, build friendships, and connect with mentors/peers.",
+  "architectural_notes": [],
+  "known_issues": [],
+  "isFixRequest": false,
+  "imageRequirements": "## Required Images\n- Butterfly-themed wordmark logo with soft warm palette (butterfly-connections-logo.dim_1024x256.png)\n- Cozy abstract neighborhood-style hero background with subtle butterfly motifs (butterfly-hero-bg.dim_1920x1080.png)\n- Set of 6 simple inclusive default avatar illustrations, warm soft palette (default-avatar-set.dim_1024x1024.png)\n- Small butterfly icon for favicon/app icon, clean silhouette (butterfly-app-icon.dim_512x512.png)",
+  "existing_features": [
+    {
+      "id": "feature-implement-internet-identity-sign-in-and-require-all-app-features-except-the-landing-age-gate-to-be-accessible-only-to-authenticated-users",
+      "title": "Implement Internet Identity sign-in and require all app features (except the landing + age gate) to be accessible only to authenticated users.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-18-eligibility-gate-that-users-must-explicitly-confirm-before-they-can-access-the-authenticated-community-area-store-the-confirmation-per-user-so-they-are-not-repeatedly-prompted-on-subsequent-sessions",
+      "title": "Add an 18+ eligibility gate that users must explicitly confirm before they can access the authenticated community area; store the confirmation per user so they are not repeatedly prompted on subsequent sessions.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-user-profiles-for-community-members-including-display-name-pronouns-free-text-short-bio-optional-identity-interests-tags-and-an-avatar-image-selector-use-generated-default-avatars-if-the-user-does-not-upload",
+      "title": "Create user profiles for community members, including: display name, pronouns (free-text), short bio, optional identity/interests tags, and an avatar image selector (use generated default avatars if the user does not upload).",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-social-posting-share-your-story-with-a-global-feed-create-post-view-feed-view-single-post-and-delete-own-post-posts-should-support-text-content-and-an-optional-image-attachment",
+      "title": "Implement social posting (“Share your story”) with a global feed: create post, view feed, view single post, and delete own post; posts should support text content and an optional image attachment.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-discussions-via-comments-on-posts-create-comment-and-view-comment-thread-per-post-allow-deleting-own-comment",
+      "title": "Add discussions via comments on posts: create comment and view comment thread per post; allow deleting own comment.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-friendship-connection-features-allow-users-to-send-connection-requests-accept-decline-requests-view-a-list-of-connections-and-remove-a-connection",
+      "title": "Implement friendship/connection features: allow users to send connection requests, accept/decline requests, view a list of connections, and remove a connection.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-mentor-peer-support-directory-allow-users-to-optionally-mark-themselves-as-open-to-mentoring-and-or-seeking-mentorship-and-provide-a-browse-filter-page-to-find-people-by-these-flags-and-tags",
+      "title": "Implement a mentor/peer support directory: allow users to optionally mark themselves as “Open to mentoring” and/or “Seeking mentorship”, and provide a browse/filter page to find people by these flags and tags.",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-safety-basics-a-clear-community-guidelines-page-per-post-and-per-comment-reporting-and-a-simple-moderation-view-to-review-reports-and-remove-reported-content",
+      "title": "Add safety basics: a clear community guidelines page, per-post and per-comment reporting, and a simple moderation view to review reports and remove reported content.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-define-and-apply-a-coherent-visual-theme-for-butterfly-connections-that-feels-like-a-cozy-welcoming-digital-neighborhood-warm-soft-palette-accessible-typography-calm-layout-and-apply-it-consistently-across-landing-auth-age-gate-feed-profiles-and-directory-pages",
+      "title": "Define and apply a coherent visual theme for Butterfly Connections that feels like a cozy, welcoming digital neighborhood (warm, soft palette; accessible typography; calm layout), and apply it consistently across landing, auth/age gate, feed, profiles, and directory pages.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-basic-navigation-for-authenticated-users-links-to-feed-directory-mentors-peers-connections-profile-guidelines-and-sign-out",
+      "title": "Add basic navigation for authenticated users: links to Feed, Directory (Mentors/Peers), Connections, Profile, Guidelines, and Sign out.",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-generate-required-static-image-assets-and-render-them-in-the-ui-stored-under-frontend-public-assets-generated-for-branding-and-a-welcoming-feel",
+      "title": "Generate required static image assets and render them in the UI (stored under frontend/public/assets/generated) for branding and a welcoming feel.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Implement 18+ only access (age gate / eligibility requirement)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "User profiles and account system for community members",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Social posting and story sharing features (feed/posts)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Discussions and community interaction features (comments/threads)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Friendship/connection features to meet and connect with others",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Mentor/peer support connections (finding mentors and supportive peers)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Safety and moderation controls to keep the space affirming and non-abusive",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Butterfly Connections",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

@@ -1,0 +1,22 @@
+{
+  "frontend/src/App.tsx": "Main application component with TanStack Router setup, authentication flow, eligibility gating, and route protection wrapping authenticated routes directly with AppShell.",
+  "frontend/src/hooks/useQueries.ts": "React Query hooks for all backend operations including eligibility, profiles, directory, connections, reporting, and admin checks.",
+  "frontend/src/hooks/useAuth.ts": "Compositional authentication hook wrapping useInternetIdentity with logout helper that clears query cache.",
+  "frontend/src/pages/Landing.tsx": "Public landing page with hero section, features, about content, and clear 18+ messaging with login CTA.",
+  "frontend/src/components/auth/AgeGate.tsx": "Age verification component requiring explicit 18+ confirmation with checkbox before accessing community features.",
+  "frontend/src/components/layout/AppShell.tsx": "Authenticated app layout wrapper providing consistent navigation, max-width container, and footer across all community pages.",
+  "frontend/src/components/nav/AuthedNav.tsx": "Persistent navigation bar for authenticated users with links to all main sections and conditional admin moderation link.",
+  "frontend/src/pages/Feed.tsx": "Community feed page placeholder showing where posts and sharing features will appear, using Sparkles icon instead of non-existent Butterfly icon.",
+  "frontend/src/pages/ProfileMe.tsx": "User's own profile page with view/edit modes for display name, pronouns, bio, tags, mentorship flags, and avatar with proper state management using useEffect.",
+  "frontend/src/pages/ProfileView.tsx": "Public profile view for other users showing their information and a connect button to send connection requests.",
+  "frontend/src/pages/Directory.tsx": "Community directory with mentorship filters showing profiles of users open to mentoring or seeking mentorship.",
+  "frontend/src/pages/Connections.tsx": "Connections management page placeholder for viewing and managing user connections and requests.",
+  "frontend/src/pages/Guidelines.tsx": "Community guidelines page with clear rules about respect, safety, community building, and reporting.",
+  "frontend/src/pages/Moderation.tsx": "Admin-only moderation panel with access control showing where report review and content removal will happen.",
+  "frontend/src/pages/PostDetail.tsx": "Individual post detail page placeholder for viewing posts and their comment threads.",
+  "frontend/index.css": "Global styles with warm butterfly-themed OKLCH color palette for light and dark modes with soft pinks and purples.",
+  "frontend/tailwind.config.js": "Tailwind configuration with extended warm color palette, Inter font family, and custom shadows for the butterfly theme.",
+  "frontend/index.html": "HTML entry point with Butterfly Connections title, meta description, and favicon linking to generated app icon.",
+  "frontend/src/backendExtensions.d.ts": "TypeScript type extensions for future backend capabilities (posts, comments, reports) not yet in the interface.",
+  "frontend/src/index.css": "Global styles with warm butterfly-themed OKLCH color palette for light and dark modes with soft pinks and purples."
+}

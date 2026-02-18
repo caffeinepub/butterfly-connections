@@ -1,0 +1,141 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-18T02:01:51.993Z",
+  "summary": "The diff adds a single-canister Motoko backend scaffold plus a TanStack Router-based frontend with landing, age gate, navigation, theme styling, and placeholder pages for most community features. Core community features (posts/comments, full connections workflow, reporting/moderation actions) appear incomplete or stubbed based on explicit “coming soon” UI text and backend traps/missing methods in the visible backend snippet.",
+  "missing_requirements": [
+    {
+      "id": "REQ-2",
+      "requirement": "Persist 18+ confirmation per authenticated user so it remains effective after refresh/re-login.",
+      "reason": "Backend stores eligibility in an in-memory Map; no stable/persistent storage is shown in the truncated backend. This may not survive upgrades/redeploys, and persistence is not demonstrated beyond the current canister memory.",
+      "evidence": [
+        "backend/main.mo"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "requirement": "Avatar image selector including ability to upload an avatar image, with default avatars used when no custom image is set.",
+      "reason": "Frontend profile view uses a fixed default avatar image reference, and profile editing code shown does not include any upload/selector UI. Backend profile type includes an optional avatar blob, but no UI implementation is evidenced.",
+      "evidence": [
+        "frontend/src/pages/ProfileMe.tsx",
+        "frontend/src/pages/Directory.tsx",
+        "backend/main.mo"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "requirement": "Implement posting: create post (text + optional image), view global feed, view single post, and delete own post.",
+      "reason": "Feed and post detail pages explicitly state posting/backend integration is “coming soon.” The frontend also defines post types in a declaration file as “future implementation.” The backend snippet shown does not include create/get/list/delete post methods.",
+      "evidence": [
+        "frontend/src/pages/Feed.tsx",
+        "frontend/src/pages/PostDetail.tsx",
+        "frontend/src/backendExtensions.d.ts",
+        "backend/main.mo"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "requirement": "Implement comments on posts: create, view thread per post, and delete own comment.",
+      "reason": "Post detail page explicitly says comments will appear once backend is connected; frontend declarations include comment methods as future work; no concrete backend comment methods are shown in the truncated backend.",
+      "evidence": [
+        "frontend/src/pages/PostDetail.tsx",
+        "frontend/src/backendExtensions.d.ts",
+        "backend/main.mo"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "requirement": "Connection features: send connection requests, accept/decline, view pending/current, and remove connection.",
+      "reason": "Connections page is a placeholder (“coming soon”). Backend functions shown do not implement the required workflow: `acceptContact` unconditionally traps and `addContact` does not persist a request/connection in the shown code.",
+      "evidence": [
+        "frontend/src/pages/Connections.tsx",
+        "backend/main.mo",
+        "frontend/src/hooks/useQueries.ts"
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "requirement": "Directory browse/filter should support filtering by mentorship flags and tags.",
+      "reason": "Backend `browseMentors` only filters by mentoring/mentorship flags. No tag-based filtering is shown, and the frontend directory UI only includes the two flag toggles in the visible portion.",
+      "evidence": [
+        "backend/main.mo",
+        "frontend/src/pages/Directory.tsx"
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "requirement": "Per-post and per-comment reporting with preset reasons + optional text, plus a moderation view that lists reports and allows removing reported content so it no longer appears.",
+      "reason": "Moderation page is explicitly a placeholder (“coming soon”). Frontend hooks reference `reportContent`/removal but the backend snippet shown does not include these methods, nor is there evidence of preset reasons + optional text UI. No concrete moderation actions are implemented in the shown UI.",
+      "evidence": [
+        "frontend/src/pages/Moderation.tsx",
+        "frontend/src/hooks/useQueries.ts",
+        "backend/main.mo"
+      ]
+    },
+    {
+      "id": "REQ-11",
+      "requirement": "Generated images are present under frontend/public/assets/generated (logo, hero bg, default avatar set, app icon) and used in UI.",
+      "reason": "UI references the required asset paths, but the diff summary does not show the actual image files under `frontend/public/assets/generated` (and some files are omitted/truncated), so presence cannot be verified from the provided diff summary alone.",
+      "evidence": [
+        "frontend/src/pages/Landing.tsx",
+        "frontend/src/components/auth/AgeGate.tsx",
+        "frontend/src/components/nav/AuthedNav.tsx",
+        "frontend/src/pages/Directory.tsx"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "Caffeine.ai promotional footer link with a UTM-tagged URL.",
+      "reason": "Not requested in the BuildRequest; adds external promotional branding/link in the authenticated shell footer.",
+      "evidence": [
+        "frontend/src/components/layout/AppShell.tsx"
+      ]
+    },
+    {
+      "description": "Admin secret token initialization via URL parameter (`caffeineAdminToken`) to initialize backend access control.",
+      "reason": "BuildRequest does not specify a secret-token URL parameter mechanism for admin/moderation permissions; this is additional access-control behavior beyond Internet Identity authentication.",
+      "evidence": [
+        "frontend/src/hooks/useActor.ts"
+      ]
+    },
+    {
+      "description": "TypeScript module augmentation describing 'future' backend post/comment/report APIs not yet implemented.",
+      "reason": "Introduces a forward-looking interface extension (“will be implemented but aren't yet in the interface”) rather than implementing the requested functionality; this extra scaffolding was not requested as a deliverable.",
+      "evidence": [
+        "frontend/src/backendExtensions.d.ts"
+      ]
+    }
+  ],
+  "confidence": 0.72,
+  "changed_files": [
+    "all_files_summary.json",
+    "backend/main.mo",
+    "frontend-file-summaries.txt",
+    "frontend/index.css",
+    "frontend/index.html",
+    "frontend/src/App.tsx",
+    "frontend/src/backendExtensions.d.ts",
+    "frontend/src/components/auth/AgeGate.tsx",
+    "frontend/src/components/layout/AppShell.tsx",
+    "frontend/src/components/nav/AuthedNav.tsx",
+    "frontend/src/hooks/useActor.ts",
+    "frontend/src/hooks/useAuth.ts",
+    "frontend/src/hooks/useInternetIdentity.ts",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/index.css",
+    "frontend/src/main.tsx",
+    "frontend/src/pages/Connections.tsx",
+    "frontend/src/pages/Directory.tsx",
+    "frontend/src/pages/Feed.tsx",
+    "frontend/src/pages/Guidelines.tsx",
+    "frontend/src/pages/Landing.tsx",
+    "frontend/src/pages/Moderation.tsx",
+    "frontend/src/pages/PostDetail.tsx",
+    "frontend/src/pages/ProfileMe.tsx",
+    "frontend/src/pages/ProfileView.tsx",
+    "frontend/src/utils/urlParams.ts",
+    "frontend/tailwind.config.js",
+    "project_state.json"
+  ]
+}
