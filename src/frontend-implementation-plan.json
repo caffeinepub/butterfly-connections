@@ -1,42 +1,95 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add “Supporter of the community” profile flag + directory filter (frontend)",
+  "title": "Moderation dashboard, moderator access gating, and banned-user UX (frontend)",
   "requirements": [
     {
-      "id": "REQ-18",
-      "summary": "Add “Supporter of the community” toggle to My Profile Mentorship section and save/load it with the community profile.",
+      "id": "REQ-33",
+      "summary": "Upgrade the existing Moderation page into a functional dashboard UI with sections for Reports, User Actions (ban/unban), and an admin-only Role Management section, accessible to moderators and admins with an Access Denied state for others.",
       "acceptanceCriteria": [
-        "The ProfileMe edit form shows a third toggle/switch labeled exactly “Supporter of the community” in the same section as the other mentorship toggles.",
-        "When a user toggles “Supporter of the community” and saves, the value persists and is restored on reload.",
-        "In ProfileMe view mode, the Mentorship summary area includes “✓ Supporter of the community” when the flag is enabled."
+        "The existing Moderation page is upgraded from the placeholder state to a functional dashboard layout with clear sections (e.g., tabs or stacked cards) for Reports, User Actions (ban/unban), and Role Management (admin-only).",
+        "The dashboard is visible/accessible to moderators as well as admins (do not restrict it to only `useIsCallerAdmin()` as it is today).",
+        "If a non-moderator/non-admin visits the moderation route, show an English ‘Access Denied’ message similar to the existing pattern.",
+        "All new user-facing strings on the moderation dashboard are in English."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/ProfileMe.tsx",
+          "path": "frontend/src/pages/Moderation.tsx",
           "operation": "modify",
-          "description": "Extend local form state to include supporterOfCommunity, initialize it from the loaded profile, include it in the CommunityProfile object passed to updateCommunityProfile, add a new Switch+Label control in the Mentorship edit section labeled exactly “Supporter of the community”, and update view-mode mentorship summary rendering to include “✓ Supporter of the community” when true (and ensure the Mentorship block renders when any of the three flags is enabled)."
+          "description": "Replace the admin-only placeholder panel with a dashboard layout (e.g., tabs/stacked cards) containing: (1) Reports review/action section, (2) User Actions section for ban/unban by Principal, and (3) an admin-only Role Management section for appointing/removing moderators; gate the page with moderator-or-admin access and show the existing-style English Access Denied UI for others. Use the authorization component’s access-control patterns for role-based UI gating and error handling; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/moderation/ReportsSection.tsx",
+          "operation": "create",
+          "description": "Create a Reports section component that lists reports (with loading/empty/error states) and provides primary moderation actions (e.g., mark reviewed/resolve, and if supported by backend capability, remove reported content). Use the authorization component’s guidance for handling authorization traps gracefully; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/moderation/UserActionsSection.tsx",
+          "operation": "create",
+          "description": "Create a User Actions section component that accepts a Principal text input, validates/parses it, shows current ban state/reason if available, and provides ban/unban actions with success/error feedback. Use the authorization component’s RBAC concepts to keep actions consistent with caller permissions; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/moderation/RoleManagementSection.tsx",
+          "operation": "create",
+          "description": "Create an admin-only Role Management section component to list current moderators and allow granting/revoking moderator role for a target Principal, with clear success/error states and query refresh. Use the authorization component’s role-based access control patterns; verify the component's usage instructions before implementing."
         }
       ]
     },
     {
-      "id": "REQ-19",
-      "summary": "Add “Supporter of the community” directory filter toggle and show supporter status on directory profile cards.",
+      "id": "REQ-34",
+      "summary": "Add type-safe React Query hooks and nav/route gating to wire the moderation dashboard to backend moderation APIs for roles, reports, bans, and moderator management.",
       "acceptanceCriteria": [
-        "Directory filter UI includes a third switch labeled exactly “Supporter of the community”.",
-        "Directory queries include the supporterOfCommunity filter value when calling the browse API.",
-        "Directory result cards visually indicate supporter status (e.g., a small label similar to the existing “Mentoring” / “Seeking” indicators) when supporterOfCommunity is true."
+        "Frontend has React Query hooks for: checking caller role/permissions, listing moderators (admin-only), banning/unbanning a Principal, and granting/revoking moderator role (admin-only).",
+        "Frontend updates the nav and route gating so the Moderation link appears for moderators and admins (not only admins).",
+        "Frontend displays success/error states for moderation actions (ban/unban, role changes, content removal) and refreshes relevant queries after mutations.",
+        "TypeScript types used by the React app reflect the new backend role/ban endpoints (extend the generated backend types via the existing `frontend/src/backendExtensions.d.ts` approach as needed)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Update useBrowseMentors to accept a filters object that includes supporterOfCommunity, and forward that full filters object to browseMentors; also add a guard so if all three filters are false, the query does not fetch and instead returns an empty list (keeping UX consistent with the existing empty-state UI)."
+          "path": "frontend/src/hooks/useModeration.ts",
+          "operation": "create",
+          "description": "Add React Query hooks/mutations for moderation: caller role/permissions (including moderator support), listing reports, resolving reports, optional content removal (if backend capability exists), ban/unban by Principal, admin-only list moderators, and admin-only grant/revoke moderator role; ensure hooks invalidate/refresh the relevant queries after mutations. Use the authorization component’s guidance for access control UI and handling backend traps; verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/pages/Directory.tsx",
+          "path": "frontend/src/backendExtensions.d.ts",
           "operation": "modify",
-          "description": "Add a third filter Switch+Label labeled exactly “Supporter of the community”, include supporterOfCommunity in the filters passed to useBrowseMentors, and add a third small status indicator on each result card (styled consistently with existing “Mentoring” / “Seeking” indicators) when profile.supporterOfCommunity is true."
+          "description": "Extend frontend backend typings to remain type-safe for new moderation capabilities: merge/extend UserRole to include a moderator role, and augment backendInterface with any new role/ban/moderation methods used by hooks (e.g., listModerators, grant/revoke moderator, caller ban-status methods, and any content-removal capability if implemented). Use the authorization component’s role model as the source of truth for UI permissions; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/nav/AuthedNav.tsx",
+          "operation": "modify",
+          "description": "Update Moderation nav link visibility to appear for moderators and admins (not only `useIsCallerAdmin()`); use the new role/permissions hook(s) and keep UX consistent while role checks are loading. Use the authorization component’s RBAC patterns for determining navigation visibility; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/Moderation.tsx",
+          "operation": "modify",
+          "description": "Wire the dashboard sections to the new React Query hooks (reports list/actions, ban/unban, moderator list/grant/revoke) and ensure success/error states trigger appropriate query invalidations and UI refresh. Use the authorization component’s error-handling guidance for authorization traps; verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-35",
+      "summary": "Add a consistent banned-user experience that shows a dedicated English banned message after authentication and blocks access to protected community pages/actions without getting stuck in loading states.",
+      "acceptanceCriteria": [
+        "When a banned user attempts to use the app after authentication, the UI shows a dedicated ‘You are banned’ message and blocks access to protected community pages/actions.",
+        "The UI does not get stuck on spinners; it handles backend ‘banned’ errors gracefully and predictably.",
+        "The banned message is shown consistently (e.g., in the main protected shell or via a dedicated route) and does not leak moderation controls."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/auth/BannedScreen.tsx",
+          "operation": "create",
+          "description": "Create a dedicated, English-only banned screen component that explains the account is banned and that community features are unavailable; include a clear sign-out action using existing auth utilities and ensure the screen does not display moderation controls. Use the authorization component’s guidance for access-denied patterns and trap handling; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/layout/AppShell.tsx",
+          "operation": "modify",
+          "description": "Add a ban-status gate for authenticated pages: query the caller’s ban status via a React Query hook and, when banned, render the dedicated BannedScreen instead of the normal app shell/nav to avoid leaking moderation controls; ensure loading/error states are handled predictably without infinite spinners. Use the authorization component’s guidance for handling authorization-related traps and displaying access-restricted UX; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useModeration.ts",
+          "operation": "modify",
+          "description": "Add/extend a caller ban-status React Query hook (and optional ban reason retrieval) used by the AppShell ban gate; ensure it behaves well during actor initialization and does not cause stuck loading states. Use the authorization component’s error-handling guidance for backend traps; verify the component's usage instructions before implementing."
         }
       ]
     }

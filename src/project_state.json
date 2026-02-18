@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 7,
+  "projectStateVersion": 13,
   "summary": "Butterfly Connections: an 18+ social community platform created by and for transgender, nonbinary, genderfluid, and questioning people to safely connect, share stories, explore identity via posts/discussions/creative expression, build friendships, and connect with mentors/peers.",
   "architectural_notes": [],
   "known_issues": [],
@@ -125,6 +125,78 @@
         "REQ-19"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-add-frontend-ui-on-the-community-feed-page-for-a-hello-corner-section-that-lets-users-post-short-chat-messages-with-an-optional-photo-and-shows-the-chat-stream",
+      "title": "Add frontend UI on the Community Feed page for a “Hello Corner” section that lets users post short chat messages with an optional photo, and shows the chat stream.",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-frontend-ui-controls-in-hello-corner-for-like-dislike-reactions-on-each-message-reflecting-current-counts-and-allowing-users-to-toggle-update-their-reaction",
+      "title": "Add frontend UI controls in Hello Corner for like/dislike reactions on each message, reflecting current counts and allowing users to toggle/update their reaction.",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-wire-hello-corner-data-flow-using-react-query-queries-mutations-and-extend-the-frontend-backend-type-definitions-interfaces-as-needed-so-hello-corner-endpoints-are-type-safe-in-the-frontend",
+      "title": "Wire Hello Corner data flow using React Query (queries + mutations) and extend the frontend backend type definitions/interfaces as needed so Hello Corner endpoints are type-safe in the frontend.",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-hello-corner-composer-ui-to-let-users-attach-either-a-photo-or-a-short-video-similar-ux-to-photo-attachment-including-client-side-validation-and-upload-progress-and-post-the-attachment-to-the-backend",
+      "title": "Update the Hello Corner composer UI to let users attach either a photo or a short video (similar UX to photo attachment), including client-side validation and upload progress, and post the attachment to the backend.",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-render-hello-corner-video-attachments-inline-in-the-hello-corner-message-list-so-videos-appear-alongside-text-and-photo-messages-in-the-feed-keeping-the-presentation-fun-and-casual",
+      "title": "Render Hello Corner video attachments inline in the Hello Corner message list so videos appear alongside text and photo messages in the feed, keeping the presentation fun and casual.",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-frontend-backend-type-definitions-interfaces-used-by-the-react-app-so-video-attachments-for-hello-corner-messages-and-community-feed-posts-are-type-safe",
+      "title": "Update frontend-backend type definitions/interfaces used by the React app so video attachments for Hello Corner messages and Community Feed posts are type-safe.",
+      "reqIds": [
+        "REQ-29"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-a-dedicated-moderation-dashboard-ui-that-is-accessible-to-moderators-and-admins-and-includes-sections-for-1-reviewing-reports-and-taking-action-and-2-user-moderation-actions-including-banning-unbanning-include-a-separate-admin-only-section-for-appointing-removing-moderators",
+      "title": "Build a dedicated Moderation Dashboard UI that is accessible to moderators and admins, and includes sections for (1) reviewing reports and taking action and (2) user moderation actions including banning/unbanning; include a separate admin-only section for appointing/removing moderators.",
+      "reqIds": [
+        "REQ-33"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-wire-the-moderation-dashboard-to-backend-apis-using-react-query-hooks-queries-mutations-for-listing-reports-if-available-removing-content-banning-unbanning-users-and-appointing-removing-moderators-keeping-frontend-backend-types-type-safe",
+      "title": "Wire the moderation dashboard to backend APIs using React Query hooks (queries + mutations) for listing reports (if available), removing content, banning/unbanning users, and appointing/removing moderators, keeping frontend-backend types type-safe.",
+      "reqIds": [
+        "REQ-34"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-clear-banned-user-ux-so-that-when-a-banned-user-signs-in-they-are-shown-an-explicit-english-message-that-their-account-is-banned-and-they-cannot-access-community-features",
+      "title": "Add a clear banned-user UX so that when a banned user signs in they are shown an explicit English message that their account is banned and they cannot access community features.",
+      "reqIds": [
+        "REQ-35"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -211,6 +283,92 @@
       "summary": "Extend the directory browsing API so the directory can be filtered by “Supporter of the community” in addition to “Open to mentoring” and “Seeking mentorship”.",
       "reqIds": [
         "REQ-17"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-14",
+      "summary": "Add a “Hello Corner” area in the Community Feed for casual chatting, with reactions (like/dislike) and support for sharing photos",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-15",
+      "summary": "Implement backend support for a new “Hello Corner” chat stream, including creating messages with text and optional photo attachment, and listing messages in reverse chronological order with pagination.",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-16",
+      "summary": "Implement backend support for per-message reactions in Hello Corner, allowing authenticated users to like or dislike a message, update their reaction, and remove their reaction, and exposing aggregated counts per message.",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-17",
+      "summary": "Add short video upload support to Community Feed (posts) and Hello Corner so users can post videos like photos and have them rendered inline in the feed/chat stream.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-18",
+      "summary": "Extend Hello Corner messages to support an optional short video attachment (in addition to the existing optional photo attachment), and expose it through the backend API so the frontend can create and list messages with videos.",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-21",
+      "summary": "Add short video upload support to Community Feed “regular posts” so users can attach an optional video to a post (like they attach photos today), and ensure videos render inline wherever posts appear (feed list and single-post views if present).",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-23",
+      "summary": "If the canister has existing stable state, implement a conditional schema migration to add the new optional video field to stored Hello Corner messages without data loss.",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-24",
+      "summary": "Add user banning controls for moderators/admins (ban/unban users to prevent access/participation).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-25",
+      "summary": "Add moderator role management: allow the owner/admin to appoint and remove other moderators with appropriate permissions.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-26",
+      "summary": "Build a dedicated moderation dashboard for reviewing reports and performing moderation actions (including bans and role management).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-27",
+      "summary": "Implement user banning in the backend so admins/moderators can ban and unban specific principals, and banned users are prevented from accessing and participating in community features.",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-28",
+      "summary": "Add moderator role management in the backend so the owner/admin can appoint and remove additional moderators, and the app can distinguish at least: regular user, moderator, and admin/owner.",
+      "reqIds": [
+        "REQ-32"
       ],
       "status": "pending"
     }

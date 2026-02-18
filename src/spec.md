@@ -1,12 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Add a “Supporter of the community” flag to user profiles and the directory, including saving/loading, filtering, and display.
+**Goal:** Add user banning, moderator appointment/removal, and a functional moderation dashboard for admins and moderators.
 
 **Planned changes:**
-- Backend: Add a boolean `supporterOfCommunity` field to `CommunityProfile`, persist it via `updateCommunityProfile`, return it via `getCommunityProfile`, and default existing profiles to `false`.
-- Backend: Extend the directory browsing API to accept a `supporterOfCommunity` filter and include it in filter behavior alongside existing mentorship filters.
-- Frontend (My Profile): Add a third mentorship-section toggle labeled exactly “Supporter of the community”, save it with the profile, and show “✓ Supporter of the community” in view mode when enabled.
-- Frontend (Directory): Add a third filter toggle labeled exactly “Supporter of the community”, include it in browse requests, and visually indicate supporter status on profile cards when `supporterOfCommunity` is true.
+- Backend: implement ban/unban by Principal, expose ban status checks, and block all authenticated community actions for banned users with clear errors; persist ban state across upgrades.
+- Backend: add role management to distinguish regular user, moderator, and admin/owner; allow admin-only appointment/removal of moderators; persist role state across upgrades.
+- Frontend: upgrade the existing Moderation page into a dashboard with sections for Reports, User Actions (ban/unban), and an admin-only Role Management section; show “Access Denied” to non-moderators/non-admins.
+- Frontend + backend wiring: add React Query hooks and type-safe endpoints for role/permission checks, listing moderators (admin-only), banning/unbanning, and granting/revoking moderator role (admin-only); update nav/route gating so Moderation is visible to moderators and admins.
+- Frontend: add a clear banned-user experience that shows an explicit English “You are banned” message after sign-in and blocks access to protected community features without spinner dead-ends.
 
-**User-visible outcome:** Users can mark themselves as “Supporter of the community” on their profile, see that status reflected on their profile, filter the directory by it, and see supporter indicators on directory profile cards.
+**User-visible outcome:** Admins can appoint/remove moderators and ban/unban users; moderators can access a dedicated moderation dashboard to review reports and perform allowed moderation actions; banned users are clearly informed and prevented from using community features.

@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import type { CommunityProfile, UserRole } from '../backend';
+import type { CommunityProfile, UserRole, ReportType, ReasonType } from '../backend';
 import { Principal } from '@dfinity/principal';
 
 // Eligibility
@@ -133,24 +133,19 @@ export function useReportContent() {
   const { actor } = useActor();
 
   return useMutation({
-    mutationFn: async ({ contentId, reason }: { contentId: string; reason: string }) => {
+    mutationFn: async ({ 
+      contentId, 
+      contentType, 
+      reasonType, 
+      description 
+    }: { 
+      contentId: string; 
+      contentType: ReportType; 
+      reasonType: ReasonType; 
+      description: string;
+    }) => {
       if (!actor) throw new Error('Actor not available');
-      await actor.reportContent(contentId, reason);
-    },
-  });
-}
-
-export function useRemoveContent() {
-  const { actor } = useActor();
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (reportId: bigint) => {
-      if (!actor) throw new Error('Actor not available');
-      await actor.removeContent(reportId);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['reports'] });
+      await actor.reportContent(contentId, contentType, reasonType, description);
     },
   });
 }

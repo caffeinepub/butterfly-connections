@@ -2,12 +2,12 @@ import { Link, useNavigate } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { Home, Users, UserCircle, BookOpen, LogOut, Shield } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
-import { useIsCallerAdmin } from '../../hooks/useQueries';
+import { useIsCallerModerator } from '../../hooks/useModeration';
 
 export default function AuthedNav() {
   const navigate = useNavigate();
   const { logout } = useAuth();
-  const { data: isAdmin } = useIsCallerAdmin();
+  const { isModerator, isLoading: moderatorLoading } = useIsCallerModerator();
 
   const handleLogout = async () => {
     await logout();
@@ -38,7 +38,7 @@ export default function AuthedNav() {
             <NavLink to="/profile" icon={<UserCircle className="w-4 h-4" />} label="Profile" />
             <NavLink to="/guidelines" icon={<BookOpen className="w-4 h-4" />} label="Guidelines" />
             
-            {isAdmin && (
+            {!moderatorLoading && isModerator && (
               <NavLink to="/moderation" icon={<Shield className="w-4 h-4" />} label="Moderation" />
             )}
 

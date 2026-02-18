@@ -1,12 +1,34 @@
 import { ReactNode } from 'react';
 import AuthedNav from '../nav/AuthedNav';
-import { Heart } from 'lucide-react';
+import BannedScreen from '../auth/BannedScreen';
+import { Heart, Loader2 } from 'lucide-react';
+import { useGetCallerBanStatus } from '../../hooks/useModeration';
 
 interface AppShellProps {
   children: ReactNode;
 }
 
 export default function AppShell({ children }: AppShellProps) {
+  const { data: banStatus, isLoading: banStatusLoading } = useGetCallerBanStatus();
+
+  // Show loading state while checking ban status
+  if (banStatusLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[oklch(0.98_0.02_320)] via-[oklch(0.96_0.03_340)] to-[oklch(0.94_0.04_360)] flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <Loader2 className="w-12 h-12 text-[oklch(0.65_0.15_320)] animate-spin mx-auto" />
+          <p className="text-[oklch(0.45_0.06_320)]">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show banned screen if user is banned
+  if (banStatus?.isBanned) {
+    return <BannedScreen reason={banStatus.reason} />;
+  }
+
+  // Normal app shell for non-banned users
   return (
     <div className="min-h-screen bg-gradient-to-br from-[oklch(0.98_0.02_320)] via-[oklch(0.96_0.03_340)] to-[oklch(0.94_0.04_360)]">
       <AuthedNav />

@@ -1,35 +1,89 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-18T02:36:18.815Z",
-  "summary": "REQ-16 and REQ-17 appear implemented end-to-end (new backend field, persisted/returned, migration defaulting to false, and directory API/hook filter support). REQ-19 UI filter toggle and API wiring appear implemented. One key constraint may be violated by adding backend/migration.mo (logic not solely in backend/main.mo), and the ProfileMe view-mode requirement to show “✓ Supporter of the community” cannot be confirmed from the provided truncated diff.",
+  "generatedAt": "2026-02-18T03:06:18.803Z",
+  "summary": "The diff adds a moderation dashboard UI shell (tabs for Reports/User Actions/Role Management), React Query hooks for reports and ban actions, a banned-user screen, and a migration that introduces `bannedUsers`/`reports` into stable state. However, moderator role management is not actually implemented end-to-end (backend APIs + frontend hooks/UI), moderator access is still effectively admin-only, and it’s unclear from the diff summary that backend ban enforcement is applied across existing user actions as required.",
   "missing_requirements": [
     {
-      "requirement": "Backend must remain a single Motoko actor with all logic in backend/main.mo (no additional backend logic files).",
-      "reason": "A new backend module file was added (backend/migration.mo) and imported/used by backend/main.mo, placing backend logic outside backend/main.mo.",
+      "id": "REQ-31",
+      "requirement": "Backend exposes admin/moderator-only methods to ban/unban, a method to check ban status, and rejects all authenticated user actions for banned users with a clear message; define and implement a consistent rule for banned users accessing moderation actions.",
+      "reason": "Frontend hooks call methods like `banUser`, `unbanUser`, `isUserBannedForAdminCheck`, and `getBanReason`, but the diff summary for `backend/main.mo` does not show these methods being implemented nor any centralized ban-check enforcement applied to existing endpoints (eligibility, profile updates, browsing, posting, reacting, reporting). The rule for whether banned users can access moderation actions is not documented/visible in the shown backend changes.",
       "evidence": [
-        "backend/migration.mo",
-        "backend/main.mo"
+        "backend/main.mo (truncated; shows `let bannedUsers = Map.empty<Principal, Text>()` but no ban APIs or enforcement shown)",
+        "frontend/src/hooks/useModeration.ts (calls `actor.banUser`, `actor.unbanUser`, `actor.isUserBannedForAdminCheck`, `actor.getBanReason`)"
       ]
     },
     {
-      "id": "REQ-18",
-      "requirement": "In ProfileMe view mode, the Mentorship summary area includes “✓ Supporter of the community” when the flag is enabled.",
-      "reason": "ProfileMe.tsx is truncated before the view-mode Mentorship summary rendering; the diff evidence shows the edit toggle and persistence, but does not show the required view-mode “✓ Supporter of the community” text.",
+      "id": "REQ-32",
+      "requirement": "Add moderator role management in backend: admin-only grant/revoke moderator role, queries for caller role and listing moderators (admin-only), and update authorization so moderation actions are allowed for moderators as well as admins; role state persists across upgrades.",
+      "reason": "No backend moderator state or APIs are shown in `backend/main.mo` or `backend/migration.mo`. Frontend explicitly notes moderator role is not yet implemented and treats only `admin` as moderator. The Role Management UI is a placeholder (“coming soon”).",
       "evidence": [
-        "frontend/src/pages/ProfileMe.tsx"
+        "frontend/src/hooks/useModeration.ts (comment: \"Currently only admins have moderation access until moderator role is added to backend\" and `isModerator: role === 'admin'`)",
+        "frontend/src/components/moderation/RoleManagementSection.tsx (placeholder: \"Moderator role management is coming soon!\")",
+        "backend/migration.mo (adds `bannedUsers` and `reports` only; no moderator role state)",
+        "backend/main.mo (truncated; no moderator role state/APIs shown)"
+      ]
+    },
+    {
+      "id": "REQ-33",
+      "requirement": "Moderation Dashboard is accessible to moderators and admins (not admin-only), with functional sections including an admin-only section to appoint/remove moderators.",
+      "reason": "The route gating uses `useIsCallerModerator()`, but that hook currently considers only `admin` as moderator, so moderators (as a distinct role) would not be able to access the dashboard. The Role Management section is not functional (placeholder) and does not implement appoint/remove actions.",
+      "evidence": [
+        "frontend/src/hooks/useModeration.ts (`isModerator: role === 'admin'`)",
+        "frontend/src/pages/Moderation.tsx (gates access on `isModerator` and renders `RoleManagementSection` which is placeholder)",
+        "frontend/src/components/moderation/RoleManagementSection.tsx (no appoint/remove functionality)"
+      ]
+    },
+    {
+      "id": "REQ-34",
+      "requirement": "Wire moderation dashboard to backend APIs using React Query hooks for checking caller role/permissions, listing moderators (admin-only), banning/unbanning, and granting/revoking moderator role (admin-only); show success/error states and refresh queries; keep types type-safe.",
+      "reason": "Hooks exist for caller role, reports, and ban/unban, but there are no React Query hooks for listing moderators or granting/revoking moderator role. The UI does not implement role-management mutations. Also, `backendExtensions.d.ts` introduces an `ExtendedBackendInterface` for future methods but those are not actually wired/used as type-safe actor calls in the shown hooks.",
+      "evidence": [
+        "frontend/src/hooks/useModeration.ts (no `useListModerators`, `useGrantModeratorRole`, `useRevokeModeratorRole` hooks present)",
+        "frontend/src/components/moderation/RoleManagementSection.tsx (placeholder, no mutations/queries)",
+        "frontend/src/backendExtensions.d.ts (documents \"future implementation\" methods rather than integrating them into the actual actor typing used by hooks)"
       ]
     }
   ],
-  "hallucinated_features": [],
-  "confidence": 0.62,
+  "hallucinated_features": [
+    {
+      "description": "Migration/type changes introducing unrelated fields (e.g., `supporterOfCommunity` on profiles and optional `video` on `HelloCornerMessage`).",
+      "reason": "These are not requested by REQ-31 to REQ-35 and appear as additional schema changes bundled into `backend/migration.mo` and `backend/main.mo`.",
+      "evidence": [
+        "backend/migration.mo (adds `supporterOfCommunity` and `HelloCornerMessage.video` comments: \"New field\")",
+        "backend/main.mo (includes `supporterOfCommunity` and `video` in types)"
+      ]
+    },
+    {
+      "description": "Frontend type extensions for Posts and Comments and related feed methods (createPost/getFeed/deletePost, comments APIs).",
+      "reason": "Not requested by REQ-31 to REQ-35; `frontend/src/backendExtensions.d.ts` adds post/comment interfaces and methods unrelated to banning/moderation roles/dashboard wiring.",
+      "evidence": [
+        "frontend/src/backendExtensions.d.ts (Post/Comment interfaces and post/comment methods)"
+      ]
+    },
+    {
+      "description": "Role-management backend interface methods added as \"future\" capabilities in frontend types without corresponding requested/implemented backend work.",
+      "reason": "REQ-34 requires wiring role management end-to-end; adding placeholder type declarations for \"future implementation\" is extra/unrequested and risks mismatching actual backend.",
+      "evidence": [
+        "frontend/src/backendExtensions.d.ts (\"Future moderation capabilities\" and \"Extended backend interface (for future implementation)\")"
+      ]
+    }
+  ],
+  "confidence": 0.64,
   "changed_files": [
     "backend/main.mo",
     "backend/migration.mo",
     "frontend-file-summaries.txt",
+    "frontend/src/backendExtensions.d.ts",
+    "frontend/src/components/auth/BannedScreen.tsx",
+    "frontend/src/components/layout/AppShell.tsx",
+    "frontend/src/components/moderation/ReportsSection.tsx",
+    "frontend/src/components/moderation/RoleManagementSection.tsx",
+    "frontend/src/components/moderation/UserActionsSection.tsx",
+    "frontend/src/components/nav/AuthedNav.tsx",
+    "frontend/src/hooks/useModeration.ts",
     "frontend/src/hooks/useQueries.ts",
-    "frontend/src/pages/Directory.tsx",
-    "frontend/src/pages/ProfileMe.tsx",
+    "frontend/src/pages/Moderation.tsx",
     "project_state.json"
   ]
 }

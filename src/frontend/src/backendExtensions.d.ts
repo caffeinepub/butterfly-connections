@@ -10,6 +10,7 @@ declare module './backend' {
     author: Principal;
     content: string;
     image?: ExternalBlob;
+    video?: ExternalBlob;
     timestamp: bigint;
   }
 
@@ -21,19 +22,11 @@ declare module './backend' {
     timestamp: bigint;
   }
 
-  export interface Report {
-    id: bigint;
-    contentId: string;
-    reportedBy: Principal;
-    reason: string;
-    timestamp: bigint;
-    resolved: boolean;
-  }
-
+  // Moderator role is now part of UserRole enum in backend
   // Extended backend interface (for future implementation)
   export interface ExtendedBackendInterface extends backendInterface {
     // Posts
-    createPost(content: string, image?: ExternalBlob): Promise<string>;
+    createPost(content: string, image?: ExternalBlob, video?: ExternalBlob): Promise<string>;
     getPost(postId: string): Promise<Post | null>;
     getFeed(limit: number, offset: number): Promise<Post[]>;
     deletePost(postId: string): Promise<void>;
@@ -43,7 +36,9 @@ declare module './backend' {
     getComments(postId: string): Promise<Comment[]>;
     deleteComment(commentId: string): Promise<void>;
 
-    // Reports
-    getReports(): Promise<Report[]>;
+    // Future moderation capabilities
+    listModerators(): Promise<Principal[]>;
+    grantModeratorRole(user: Principal): Promise<void>;
+    revokeModeratorRole(user: Principal): Promise<void>;
   }
 }

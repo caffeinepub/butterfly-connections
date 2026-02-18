@@ -22,6 +22,43 @@ export interface CommunityProfile {
   'avatar' : [] | [ExternalBlob],
 }
 export type ExternalBlob = Uint8Array;
+export interface HelloCornerMessage {
+  'id' : MessageId,
+  'video' : [] | [ExternalBlob],
+  'createdAt' : bigint,
+  'text' : string,
+  'author' : Principal,
+  'photo' : [] | [ExternalBlob],
+}
+export type MessageId = bigint;
+export interface PaginatedMessages {
+  'nextOffset' : bigint,
+  'hasMore' : boolean,
+  'messages' : Array<HelloCornerMessage>,
+}
+export type ReactionType = { 'like' : null } |
+  { 'dislike' : null };
+export type ReasonType = { 'violation' : null } |
+  { 'troll' : null } |
+  { 'other' : string } |
+  { 'lecture' : null } |
+  { 'insensitive' : null } |
+  { 'offTopic' : null };
+export interface Report {
+  'id' : ReportId,
+  'status' : ReportStatus,
+  'contentId' : string,
+  'reasonType' : ReasonType,
+  'description' : string,
+  'reportType' : ReportType,
+  'timestamp' : bigint,
+  'reporter' : Principal,
+}
+export type ReportId = bigint;
+export type ReportStatus = { 'pending' : null } |
+  { 'reviewed' : null };
+export type ReportType = { 'message' : null } |
+  { 'profile' : null };
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
@@ -56,6 +93,7 @@ export interface _SERVICE {
   'acceptContact' : ActorMethod<[Principal], undefined>,
   'addContact' : ActorMethod<[Principal], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'banUser' : ActorMethod<[Principal, string], undefined>,
   'browseMentors' : ActorMethod<
     [
       {
@@ -67,14 +105,42 @@ export interface _SERVICE {
     Array<CommunityProfile>
   >,
   'confirmEligibility' : ActorMethod<[], undefined>,
+  'createHelloCornerMessage' : ActorMethod<
+    [string, [] | [ExternalBlob], [] | [ExternalBlob]],
+    MessageId
+  >,
+  'getBanReason' : ActorMethod<[Principal], string>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getCommunityProfile' : ActorMethod<[Principal], CommunityProfile>,
   'getContacts' : ActorMethod<[Principal], Array<Principal>>,
+  'getLectureReports' : ActorMethod<[bigint, bigint], Array<Report>>,
+  'getMessageReactions' : ActorMethod<
+    [MessageId],
+    { 'dislikeCount' : bigint, 'likeCount' : bigint }
+  >,
+  'getPendingTrollReports' : ActorMethod<
+    [bigint, bigint],
+    { 'pendingTrollReports' : Array<Report>, 'totalCount' : bigint }
+  >,
   'getProfilePhoto' : ActorMethod<[Principal], [] | [ExternalBlob]>,
+  'getReport' : ActorMethod<[ReportId], Report>,
+  'getUserReportStats' : ActorMethod<
+    [Principal],
+    { 'profileReportCount' : bigint, 'messageReportCount' : bigint }
+  >,
   'hasConfirmedEligibility' : ActorMethod<[], boolean>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
-  'removeContent' : ActorMethod<[bigint], undefined>,
-  'reportContent' : ActorMethod<[string, string], undefined>,
+  'isUserBannedForAdminCheck' : ActorMethod<[Principal], boolean>,
+  'listHelloCornerMessages' : ActorMethod<[bigint, bigint], PaginatedMessages>,
+  'listReports' : ActorMethod<[bigint, bigint], Array<Report>>,
+  'reactToMessage' : ActorMethod<[MessageId, ReactionType], undefined>,
+  'removeReaction' : ActorMethod<[MessageId], undefined>,
+  'reportContent' : ActorMethod<
+    [string, ReportType, ReasonType, string],
+    undefined
+  >,
+  'resolveReport' : ActorMethod<[ReportId], undefined>,
+  'unbanUser' : ActorMethod<[Principal], undefined>,
   'updateCommunityProfile' : ActorMethod<[CommunityProfile], undefined>,
   'uploadProfilePhoto' : ActorMethod<[ExternalBlob], undefined>,
 }
