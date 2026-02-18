@@ -93,6 +93,7 @@ export interface CommunityProfile {
     bio: string;
     seekingMentorship: boolean;
     displayName: string;
+    profilePhoto?: ExternalBlob;
     tags: Array<string>;
     pronouns: string;
     openToMentoring: boolean;
@@ -133,11 +134,13 @@ export interface backendInterface {
     getCallerUserRole(): Promise<UserRole>;
     getCommunityProfile(user: Principal): Promise<CommunityProfile>;
     getContacts(user: Principal): Promise<Array<Principal>>;
+    getProfilePhoto(user: Principal): Promise<ExternalBlob | null>;
     hasConfirmedEligibility(): Promise<boolean>;
     isCallerAdmin(): Promise<boolean>;
     removeContent(_reportId: bigint): Promise<void>;
     reportContent(contentId: string, _reason: string): Promise<void>;
     updateCommunityProfile(profile: CommunityProfile): Promise<void>;
+    uploadProfilePhoto(blob: ExternalBlob): Promise<void>;
 }
 import type { CommunityProfile as _CommunityProfile, ExternalBlob as _ExternalBlob, UserRole as _UserRole, _CaffeineStorageRefillInformation as __CaffeineStorageRefillInformation, _CaffeineStorageRefillResult as __CaffeineStorageRefillResult } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
@@ -355,6 +358,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async getProfilePhoto(arg0: Principal): Promise<ExternalBlob | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getProfilePhoto(arg0);
+                return from_candid_opt_n13(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getProfilePhoto(arg0);
+            return from_candid_opt_n13(this._uploadFile, this._downloadFile, result);
+        }
+    }
     async hasConfirmedEligibility(): Promise<boolean> {
         if (this.processError) {
             try {
@@ -425,6 +442,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async uploadProfilePhoto(arg0: ExternalBlob): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.uploadProfilePhoto(await to_candid_ExternalBlob_n19(this._uploadFile, this._downloadFile, arg0));
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.uploadProfilePhoto(await to_candid_ExternalBlob_n19(this._uploadFile, this._downloadFile, arg0));
+            return result;
+        }
+    }
 }
 async function from_candid_CommunityProfile_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _CommunityProfile): Promise<CommunityProfile> {
     return await from_candid_record_n12(_uploadFile, _downloadFile, value);
@@ -451,6 +482,7 @@ async function from_candid_record_n12(_uploadFile: (file: ExternalBlob) => Promi
     bio: string;
     seekingMentorship: boolean;
     displayName: string;
+    profilePhoto: [] | [_ExternalBlob];
     tags: Array<string>;
     pronouns: string;
     openToMentoring: boolean;
@@ -459,6 +491,7 @@ async function from_candid_record_n12(_uploadFile: (file: ExternalBlob) => Promi
     bio: string;
     seekingMentorship: boolean;
     displayName: string;
+    profilePhoto?: ExternalBlob;
     tags: Array<string>;
     pronouns: string;
     openToMentoring: boolean;
@@ -468,6 +501,7 @@ async function from_candid_record_n12(_uploadFile: (file: ExternalBlob) => Promi
         bio: value.bio,
         seekingMentorship: value.seekingMentorship,
         displayName: value.displayName,
+        profilePhoto: record_opt_to_undefined(await from_candid_opt_n13(_uploadFile, _downloadFile, value.profilePhoto)),
         tags: value.tags,
         pronouns: value.pronouns,
         openToMentoring: value.openToMentoring,
@@ -517,6 +551,7 @@ async function to_candid_record_n18(_uploadFile: (file: ExternalBlob) => Promise
     bio: string;
     seekingMentorship: boolean;
     displayName: string;
+    profilePhoto?: ExternalBlob;
     tags: Array<string>;
     pronouns: string;
     openToMentoring: boolean;
@@ -525,6 +560,7 @@ async function to_candid_record_n18(_uploadFile: (file: ExternalBlob) => Promise
     bio: string;
     seekingMentorship: boolean;
     displayName: string;
+    profilePhoto: [] | [_ExternalBlob];
     tags: Array<string>;
     pronouns: string;
     openToMentoring: boolean;
@@ -534,6 +570,7 @@ async function to_candid_record_n18(_uploadFile: (file: ExternalBlob) => Promise
         bio: value.bio,
         seekingMentorship: value.seekingMentorship,
         displayName: value.displayName,
+        profilePhoto: value.profilePhoto ? candid_some(await to_candid_ExternalBlob_n19(_uploadFile, _downloadFile, value.profilePhoto)) : candid_none(),
         tags: value.tags,
         pronouns: value.pronouns,
         openToMentoring: value.openToMentoring,

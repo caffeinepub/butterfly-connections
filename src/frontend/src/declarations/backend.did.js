@@ -29,6 +29,7 @@ export const CommunityProfile = IDL.Record({
   'bio' : IDL.Text,
   'seekingMentorship' : IDL.Bool,
   'displayName' : IDL.Text,
+  'profilePhoto' : IDL.Opt(ExternalBlob),
   'tags' : IDL.Vec(IDL.Text),
   'pronouns' : IDL.Text,
   'openToMentoring' : IDL.Bool,
@@ -83,11 +84,17 @@ export const idlService = IDL.Service({
       [IDL.Vec(IDL.Principal)],
       ['query'],
     ),
+  'getProfilePhoto' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Opt(ExternalBlob)],
+      ['query'],
+    ),
   'hasConfirmedEligibility' : IDL.Func([], [IDL.Bool], ['query']),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'removeContent' : IDL.Func([IDL.Nat], [], []),
   'reportContent' : IDL.Func([IDL.Text, IDL.Text], [], []),
   'updateCommunityProfile' : IDL.Func([CommunityProfile], [], []),
+  'uploadProfilePhoto' : IDL.Func([ExternalBlob], [], []),
 });
 
 export const idlInitArgs = [];
@@ -114,6 +121,7 @@ export const idlFactory = ({ IDL }) => {
     'bio' : IDL.Text,
     'seekingMentorship' : IDL.Bool,
     'displayName' : IDL.Text,
+    'profilePhoto' : IDL.Opt(ExternalBlob),
     'tags' : IDL.Vec(IDL.Text),
     'pronouns' : IDL.Text,
     'openToMentoring' : IDL.Bool,
@@ -168,11 +176,17 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(IDL.Principal)],
         ['query'],
       ),
+    'getProfilePhoto' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Opt(ExternalBlob)],
+        ['query'],
+      ),
     'hasConfirmedEligibility' : IDL.Func([], [IDL.Bool], ['query']),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'removeContent' : IDL.Func([IDL.Nat], [], []),
     'reportContent' : IDL.Func([IDL.Text, IDL.Text], [], []),
     'updateCommunityProfile' : IDL.Func([CommunityProfile], [], []),
+    'uploadProfilePhoto' : IDL.Func([ExternalBlob], [], []),
   });
 };
 

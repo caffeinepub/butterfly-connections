@@ -5,11 +5,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '../hooks/useAuth';
 import { useGetCommunityProfile, useUpdateCommunityProfile } from '../hooks/useQueries';
 import { toast } from 'sonner';
-import type { CommunityProfile } from '../backend';
+import type { CommunityProfile, ExternalBlob } from '../backend';
+import ProfilePhotosManager from '../components/profile/ProfilePhotosManager';
 
 export default function ProfileMe() {
   const { principalString } = useAuth();
@@ -22,6 +22,8 @@ export default function ProfileMe() {
   const [tags, setTags] = useState('');
   const [openToMentoring, setOpenToMentoring] = useState(false);
   const [seekingMentorship, setSeekingMentorship] = useState(false);
+  const [avatar, setAvatar] = useState<ExternalBlob | undefined>(undefined);
+  const [profilePhoto, setProfilePhoto] = useState<ExternalBlob | undefined>(undefined);
   const [isEditing, setIsEditing] = useState(false);
 
   // Initialize form when profile loads
@@ -33,6 +35,8 @@ export default function ProfileMe() {
       setTags(profile.tags.join(', ') || '');
       setOpenToMentoring(profile.openToMentoring || false);
       setSeekingMentorship(profile.seekingMentorship || false);
+      setAvatar(profile.avatar);
+      setProfilePhoto(profile.profilePhoto);
     }
   }, [profile]);
 
@@ -49,7 +53,8 @@ export default function ProfileMe() {
       tags: tags.split(',').map(t => t.trim()).filter(t => t.length > 0),
       openToMentoring,
       seekingMentorship,
-      avatar: profile?.avatar,
+      avatar,
+      profilePhoto,
     };
 
     updateProfile(updatedProfile, {
@@ -106,20 +111,18 @@ export default function ProfileMe() {
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Avatar */}
-          <div className="flex justify-center">
-            <Avatar className="w-24 h-24">
-              <AvatarImage src="/assets/generated/default-avatar-set.dim_1024x1024.png" />
-              <AvatarFallback className="bg-[oklch(0.65_0.15_320)] text-white text-2xl">
-                {displayName.charAt(0).toUpperCase() || '?'}
-              </AvatarFallback>
-            </Avatar>
-          </div>
-
           {(isEditing || showSetup) ? (
             <>
               {/* Edit Mode */}
-              <div className="space-y-4">
+              <ProfilePhotosManager
+                currentAvatar={profile?.avatar}
+                currentProfilePhoto={profile?.profilePhoto}
+                displayName={displayName || 'User'}
+                onAvatarChange={setAvatar}
+                onProfilePhotoChange={setProfilePhoto}
+              />
+
+              <div className="space-y-4 pt-4 border-t border-[oklch(0.90_0.02_320)]">
                 <div className="space-y-2">
                   <Label htmlFor="displayName">Display Name *</Label>
                   <Input
@@ -202,7 +205,20 @@ export default function ProfileMe() {
                 </Button>
                 {!showSetup && (
                   <Button
-                    onClick={() => setIsEditing(false)}
+                    onClick={() => {
+                      setIsEditing(false);
+                      // Reset to current profile values
+                      if (profile) {
+                        setDisplayName(profile.displayName || '');
+                        setPronouns(profile.pronouns || '');
+                        setBio(profile.bio || '');
+                        setTags(profile.tags.join(', ') || '');
+                        setOpenToMentoring(profile.openToMentoring || false);
+                        setSeekingMentorship(profile.seekingMentorship || false);
+                        setAvatar(profile.avatar);
+                        setProfilePhoto(profile.profilePhoto);
+                      }
+                    }}
                     variant="outline"
                     className="flex-1"
                   >
@@ -214,55 +230,76 @@ export default function ProfileMe() {
           ) : (
             <>
               {/* View Mode */}
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-sm font-medium text-[oklch(0.50_0.06_320)] mb-1">Display Name</h3>
-                  <p className="text-[oklch(0.35_0.08_320)] text-lg">{profile?.displayName || 'Not set'}</p>
+              <div className="space-y-6">
+                {/* Avatar and Profile Photo Display */}
+                <div className="flex flex-col items-center gap-4">
+                  <img
+                    src={profile?.avatar?.getDirectURL() || '/assets/generated/default-avatar-set.dim_1024x1024.png'}
+                    alt="Avatar"
+                    className="w-32 h-32 rounded-full object-cover border-4 border-[oklch(0.90_0.02_320)]"
+                  />
+                  
+                  {profile?.profilePhoto && (
+                    <div className="w-full max-w-md">
+                      <img
+                        src={profile.profilePhoto.getDirectURL()}
+                        alt="Profile photo"
+                        className="w-full h-64 object-cover rounded-lg border-2 border-[oklch(0.90_0.02_320)]"
+                      />
+                    </div>
+                  )}
                 </div>
 
-                {profile?.pronouns && (
+                <div className="space-y-4 pt-4 border-t border-[oklch(0.90_0.02_320)]">
                   <div>
-                    <h3 className="text-sm font-medium text-[oklch(0.50_0.06_320)] mb-1">Pronouns</h3>
-                    <p className="text-[oklch(0.35_0.08_320)]">{profile.pronouns}</p>
+                    <h3 className="text-sm font-medium text-[oklch(0.50_0.06_320)] mb-1">Display Name</h3>
+                    <p className="text-[oklch(0.35_0.08_320)] text-lg">{profile?.displayName || 'Not set'}</p>
                   </div>
-                )}
 
-                {profile?.bio && (
-                  <div>
-                    <h3 className="text-sm font-medium text-[oklch(0.50_0.06_320)] mb-1">Bio</h3>
-                    <p className="text-[oklch(0.35_0.08_320)] whitespace-pre-wrap">{profile.bio}</p>
-                  </div>
-                )}
-
-                {profile?.tags && profile.tags.length > 0 && (
-                  <div>
-                    <h3 className="text-sm font-medium text-[oklch(0.50_0.06_320)] mb-2">Interests</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {profile.tags.map((tag, i) => (
-                        <span
-                          key={i}
-                          className="px-3 py-1 bg-[oklch(0.96_0.03_340)] text-[oklch(0.45_0.06_320)] rounded-full text-sm"
-                        >
-                          {tag}
-                        </span>
-                      ))}
+                  {profile?.pronouns && (
+                    <div>
+                      <h3 className="text-sm font-medium text-[oklch(0.50_0.06_320)] mb-1">Pronouns</h3>
+                      <p className="text-[oklch(0.35_0.08_320)]">{profile.pronouns}</p>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {(profile?.openToMentoring || profile?.seekingMentorship) && (
-                  <div className="pt-4 border-t border-[oklch(0.90_0.02_320)]">
-                    <h3 className="text-sm font-medium text-[oklch(0.50_0.06_320)] mb-2">Mentorship</h3>
-                    <div className="space-y-1">
-                      {profile.openToMentoring && (
-                        <p className="text-[oklch(0.35_0.08_320)]">✓ Open to mentoring others</p>
-                      )}
-                      {profile.seekingMentorship && (
-                        <p className="text-[oklch(0.35_0.08_320)]">✓ Seeking mentorship</p>
-                      )}
+                  {profile?.bio && (
+                    <div>
+                      <h3 className="text-sm font-medium text-[oklch(0.50_0.06_320)] mb-1">Bio</h3>
+                      <p className="text-[oklch(0.35_0.08_320)] whitespace-pre-wrap">{profile.bio}</p>
                     </div>
-                  </div>
-                )}
+                  )}
+
+                  {profile?.tags && profile.tags.length > 0 && (
+                    <div>
+                      <h3 className="text-sm font-medium text-[oklch(0.50_0.06_320)] mb-2">Interests</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {profile.tags.map((tag, i) => (
+                          <span
+                            key={i}
+                            className="px-3 py-1 bg-[oklch(0.96_0.03_340)] text-[oklch(0.45_0.06_320)] rounded-full text-sm"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {(profile?.openToMentoring || profile?.seekingMentorship) && (
+                    <div className="pt-4 border-t border-[oklch(0.90_0.02_320)]">
+                      <h3 className="text-sm font-medium text-[oklch(0.50_0.06_320)] mb-2">Mentorship</h3>
+                      <div className="space-y-1">
+                        {profile.openToMentoring && (
+                          <p className="text-[oklch(0.35_0.08_320)]">✓ Open to mentoring others</p>
+                        )}
+                        {profile.seekingMentorship && (
+                          <p className="text-[oklch(0.35_0.08_320)]">✓ Seeking mentorship</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </>
           )}

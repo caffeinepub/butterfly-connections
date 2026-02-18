@@ -9,7 +9,9 @@ import Storage "blob-storage/Storage";
 import MixinStorage "blob-storage/Mixin";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
+import Migration "migration";
 
+(with migration = Migration.run)
 actor {
   include MixinStorage();
   let accessControlState = AccessControl.initState();
@@ -22,6 +24,7 @@ actor {
     bio : Text;
     tags : [Text];
     avatar : ?Storage.ExternalBlob;
+    profilePhoto : ?Storage.ExternalBlob;
     openToMentoring : Bool;
     seekingMentorship : Bool;
   };
@@ -60,10 +63,16 @@ actor {
 
   // Eligibility
   public shared ({ caller }) func confirmEligibility() : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can confirm eligibility");
+    };
     eligibilityConfirmed.add(caller, true);
   };
 
   public query ({ caller }) func hasConfirmedEligibility() : async Bool {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can check eligibility");
+    };
     eligibilityConfirmed.containsKey(caller);
   };
 
@@ -96,6 +105,30 @@ actor {
       }
     );
     filteredProfiles;
+  };
+
+  // Profile Photo Upload
+  public shared ({ caller }) func uploadProfilePhoto(blob : Storage.ExternalBlob) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can upload profile photos");
+    };
+    switch (communityProfiles.get(caller)) {
+      case (null) { Runtime.trap("User does not exist") };
+      case (?profile) {
+        let updatedProfile = { profile with profilePhoto = ?blob };
+        communityProfiles.add(caller, updatedProfile);
+      };
+    };
+  };
+
+  public query ({ caller }) func getProfilePhoto(user : Principal) : async ?Storage.ExternalBlob {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can view profile photos");
+    };
+    switch (communityProfiles.get(user)) {
+      case (null) { Runtime.trap("User does not exist") };
+      case (?profile) { profile.profilePhoto };
+    };
   };
 
   // Connections

@@ -18,6 +18,7 @@ export interface CommunityProfile {
     bio: string;
     seekingMentorship: boolean;
     displayName: string;
+    profilePhoto?: ExternalBlob;
     tags: Array<string>;
     pronouns: string;
     openToMentoring: boolean;
@@ -40,9 +41,11 @@ export interface backendInterface {
     getCallerUserRole(): Promise<UserRole>;
     getCommunityProfile(user: Principal): Promise<CommunityProfile>;
     getContacts(user: Principal): Promise<Array<Principal>>;
+    getProfilePhoto(user: Principal): Promise<ExternalBlob | null>;
     hasConfirmedEligibility(): Promise<boolean>;
     isCallerAdmin(): Promise<boolean>;
     removeContent(_reportId: bigint): Promise<void>;
     reportContent(contentId: string, _reason: string): Promise<void>;
     updateCommunityProfile(profile: CommunityProfile): Promise<void>;
+    uploadProfilePhoto(blob: ExternalBlob): Promise<void>;
 }

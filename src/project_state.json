@@ -1,11 +1,10 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 3,
+  "projectStateVersion": 5,
   "summary": "Butterfly Connections: an 18+ social community platform created by and for transgender, nonbinary, genderfluid, and questioning people to safely connect, share stories, explore identity via posts/discussions/creative expression, build friendships, and connect with mentors/peers.",
   "architectural_notes": [],
   "known_issues": [],
   "isFixRequest": false,
-  "imageRequirements": "## Required Images\n- Butterfly-themed wordmark logo with soft warm palette (butterfly-connections-logo.dim_1024x256.png)\n- Cozy abstract neighborhood-style hero background with subtle butterfly motifs (butterfly-hero-bg.dim_1920x1080.png)\n- Set of 6 simple inclusive default avatar illustrations, warm soft palette (default-avatar-set.dim_1024x1024.png)\n- Small butterfly icon for favicon/app icon, clean silhouette (butterfly-app-icon.dim_512x512.png)",
   "existing_features": [
     {
       "id": "feature-implement-internet-identity-sign-in-and-require-all-app-features-except-the-landing-age-gate-to-be-accessible-only-to-authenticated-users",
@@ -94,6 +93,22 @@
         "REQ-11"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-add-ui-on-the-my-profile-page-to-let-users-upload-and-manage-their-profile-photos-set-replace-avatar-photo-add-additional-photos-preview-photos-and-remove-photos-then-persist-changes-to-the-backend-profile",
+      "title": "Add UI on the “My Profile” page to let users upload and manage their profile photos: set/replace avatar photo, add additional photos, preview photos, and remove photos, then persist changes to the backend profile.",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-render-user-uploaded-avatar-profile-photos-on-the-view-profile-page-and-any-other-existing-profile-displays-so-that-other-users-see-the-customized-profile-visuals-instead-of-always-seeing-the-default-avatar-image",
+      "title": "Render user-uploaded avatar/profile photos on the “View Profile” page (and any other existing profile displays) so that other users see the customized profile visuals instead of always seeing the default avatar image.",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -137,6 +152,28 @@
       "id": "AR-7",
       "summary": "Safety and moderation controls to keep the space affirming and non-abusive",
       "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Allow users to upload/add photos and further customize their profile (beyond basic fields/avatar defaults)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Extend community profiles to support user-uploaded profile photos (in addition to the existing avatar field), including storing and retrieving the uploaded image blobs as part of each user’s profile.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Preserve existing production profile data when introducing new profile photo fields by implementing a conditional canister state migration (only if there is existing stable state) that upgrades stored profiles without data loss.",
+      "reqIds": [
+        "REQ-13"
+      ],
       "status": "pending"
     }
   ],

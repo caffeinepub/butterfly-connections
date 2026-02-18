@@ -14,6 +14,7 @@ export interface CommunityProfile {
   'bio' : string,
   'seekingMentorship' : boolean,
   'displayName' : string,
+  'profilePhoto' : [] | [ExternalBlob],
   'tags' : Array<string>,
   'pronouns' : string,
   'openToMentoring' : boolean,
@@ -62,11 +63,13 @@ export interface _SERVICE {
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getCommunityProfile' : ActorMethod<[Principal], CommunityProfile>,
   'getContacts' : ActorMethod<[Principal], Array<Principal>>,
+  'getProfilePhoto' : ActorMethod<[Principal], [] | [ExternalBlob]>,
   'hasConfirmedEligibility' : ActorMethod<[], boolean>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'removeContent' : ActorMethod<[bigint], undefined>,
   'reportContent' : ActorMethod<[string, string], undefined>,
   'updateCommunityProfile' : ActorMethod<[CommunityProfile], undefined>,
+  'uploadProfilePhoto' : ActorMethod<[ExternalBlob], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

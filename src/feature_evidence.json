@@ -2,11 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-implement-internet-identity-sign-in-and-require-all-app-features-except-the-landing-age-gate-to-be-accessible-only-to-authenticated-users",
-      "featureTitle": "Implement Internet Identity sign-in and require all app features (except the landing + age gate) to be accessible only to authenticated users.",
+      "featureId": "feature-add-ui-on-the-my-profile-page-to-let-users-upload-and-manage-their-profile-photos-set-replace-avatar-photo-add-additional-photos-preview-photos-and-remove-photos-then-persist-changes-to-the-backend-profile",
+      "featureTitle": "Add UI on the “My Profile” page to let users upload and manage their profile photos: set/replace avatar photo, add additional photos, preview photos, and remove photos, then persist changes to the backend profile.",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/hooks/useAuth.ts"
+        "frontend/src/components/profile/ProfilePhotosManager.tsx",
+        "frontend/src/pages/ProfileMe.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -18,38 +18,15 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-1"
+        "REQ-14"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-an-18-eligibility-gate-that-users-must-explicitly-confirm-before-they-can-access-the-authenticated-community-area-store-the-confirmation-per-user-so-they-are-not-repeatedly-prompted-on-subsequent-sessions",
-      "featureTitle": "Add an 18+ eligibility gate that users must explicitly confirm before they can access the authenticated community area; store the confirmation per user so they are not repeatedly prompted on subsequent sessions.",
+      "featureId": "feature-render-user-uploaded-avatar-profile-photos-on-the-view-profile-page-and-any-other-existing-profile-displays-so-that-other-users-see-the-customized-profile-visuals-instead-of-always-seeing-the-default-avatar-image",
+      "featureTitle": "Render user-uploaded avatar/profile photos on the “View Profile” page (and any other existing profile displays) so that other users see the customized profile visuals instead of always seeing the default avatar image.",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/auth/AgeGate.tsx",
-        "frontend/src/pages/Landing.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-2"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-create-user-profiles-for-community-members-including-display-name-pronouns-free-text-short-bio-optional-identity-interests-tags-and-an-avatar-image-selector-use-generated-default-avatars-if-the-user-does-not-upload",
-      "featureTitle": "Create user profiles for community members, including: display name, pronouns (free-text), short bio, optional identity/interests tags, and an avatar image selector (use generated default avatars if the user does not upload).",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/pages/ProfileMe.tsx",
+        "frontend/src/pages/Directory.tsx",
         "frontend/src/pages/ProfileView.tsx"
       ],
       "components": [
@@ -62,183 +39,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-3"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-implement-social-posting-share-your-story-with-a-global-feed-create-post-view-feed-view-single-post-and-delete-own-post-posts-should-support-text-content-and-an-optional-image-attachment",
-      "featureTitle": "Implement social posting (“Share your story”) with a global feed: create post, view feed, view single post, and delete own post; posts should support text content and an optional image attachment.",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/backendExtensions.d.ts",
-        "frontend/src/pages/Feed.tsx",
-        "frontend/src/pages/PostDetail.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-4"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-discussions-via-comments-on-posts-create-comment-and-view-comment-thread-per-post-allow-deleting-own-comment",
-      "featureTitle": "Add discussions via comments on posts: create comment and view comment thread per post; allow deleting own comment.",
-      "files": [
-        "frontend/src/backendExtensions.d.ts",
-        "frontend/src/pages/PostDetail.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-5"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-implement-friendship-connection-features-allow-users-to-send-connection-requests-accept-decline-requests-view-a-list-of-connections-and-remove-a-connection",
-      "featureTitle": "Implement friendship/connection features: allow users to send connection requests, accept/decline requests, view a list of connections, and remove a connection.",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/pages/Connections.tsx",
-        "frontend/src/pages/ProfileView.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-6"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-implement-a-mentor-peer-support-directory-allow-users-to-optionally-mark-themselves-as-open-to-mentoring-and-or-seeking-mentorship-and-provide-a-browse-filter-page-to-find-people-by-these-flags-and-tags",
-      "featureTitle": "Implement a mentor/peer support directory: allow users to optionally mark themselves as “Open to mentoring” and/or “Seeking mentorship”, and provide a browse/filter page to find people by these flags and tags.",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/pages/Directory.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-7"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-safety-basics-a-clear-community-guidelines-page-per-post-and-per-comment-reporting-and-a-simple-moderation-view-to-review-reports-and-remove-reported-content",
-      "featureTitle": "Add safety basics: a clear community guidelines page, per-post and per-comment reporting, and a simple moderation view to review reports and remove reported content.",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/backendExtensions.d.ts",
-        "frontend/src/pages/Guidelines.tsx",
-        "frontend/src/pages/Moderation.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-8"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-define-and-apply-a-coherent-visual-theme-for-butterfly-connections-that-feels-like-a-cozy-welcoming-digital-neighborhood-warm-soft-palette-accessible-typography-calm-layout-and-apply-it-consistently-across-landing-auth-age-gate-feed-profiles-and-directory-pages",
-      "featureTitle": "Define and apply a coherent visual theme for Butterfly Connections that feels like a cozy, welcoming digital neighborhood (warm, soft palette; accessible typography; calm layout), and apply it consistently across landing, auth/age gate, feed, profiles, and directory pages.",
-      "files": [
-        "frontend/src/components/layout/AppShell.tsx",
-        "frontend/src/index.css",
-        "frontend/src/pages/Landing.tsx",
-        "frontend/tailwind.config.js"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-9"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-basic-navigation-for-authenticated-users-links-to-feed-directory-mentors-peers-connections-profile-guidelines-and-sign-out",
-      "featureTitle": "Add basic navigation for authenticated users: links to Feed, Directory (Mentors/Peers), Connections, Profile, Guidelines, and Sign out.",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/layout/AppShell.tsx",
-        "frontend/src/components/nav/AuthedNav.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-10"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-generate-required-static-image-assets-and-render-them-in-the-ui-stored-under-frontend-public-assets-generated-for-branding-and-a-welcoming-feel",
-      "featureTitle": "Generate required static image assets and render them in the UI (stored under frontend/public/assets/generated) for branding and a welcoming feel.",
-      "files": [
-        "frontend/index.html",
-        "frontend/src/pages/Landing.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-11"
+        "REQ-15"
       ],
       "confidence": "high"
     }

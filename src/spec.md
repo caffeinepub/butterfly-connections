@@ -1,19 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Build the initial Butterfly Connections 18+ authenticated social platform with profiles, posting, connections, mentorship directory, and basic safety/moderation.
+**Goal:** Allow users to upload and manage profile photos (avatar plus additional photos) and display them across profile views, while preserving existing profile data through a safe backend migration.
 
 **Planned changes:**
-- Add Internet Identity sign-in and route protection so only landing + age gate are accessible without authentication.
-- Implement an 18+ eligibility confirmation gate that must be completed before accessing any community features, persisted per authenticated user.
-- Create user profiles with display name, pronouns (free-text), bio, optional tags, mentorship flags (open to mentoring / seeking mentorship), and avatar selection with generated defaults.
-- Implement social posting: create post (text + optional image), global feed, single post view, and delete own posts.
-- Implement comments on posts: view thread, add comment, and delete own comments.
-- Implement connections: send/accept/decline requests, list connections and pending requests, and remove connections.
-- Add a mentor/peer support directory with browse + basic filters (mentorship flags, tags) linking to profiles.
-- Add safety basics: Community Guidelines page, report post/comment with preset reason + optional text, and a moderation view to review reports and remove reported content.
-- Add authenticated navigation to Feed, Directory, Connections, Profile, Guidelines, and Sign out.
-- Apply a coherent warm, cozy visual theme consistently across all pages.
-- Generate and include required static branding/UX image assets under `frontend/public/assets/generated` and render them in the UI.
+- Extend the community profile backend model to store an avatar reference and a list of additional uploaded profile photo references, using existing external blob storage for image blobs.
+- Update profile fetch behavior (getCommunityProfile) to return avatar and additional photo references when present.
+- Implement a conditional canister state migration to add new photo fields for existing profiles without losing or altering existing profile data.
+- Add “My Profile” UI to upload/set/replace avatar, add additional photos, preview current photos, remove additional photos (with confirmation or undo-safe interaction), and save changes to persist to the backend.
+- Update “View Profile” (and existing profile displays) to render the uploaded avatar when present (fallback to default avatar otherwise) and show additional photos in a simple responsive, accessible gallery.
 
-**User-visible outcome:** Visitors can view a landing page and confirm 18+ eligibility, then sign in with Internet Identity to create a profile, browse a feed, post stories (optionally with images), comment, connect with others, browse a mentorship directory, view guidelines, report content, and (via moderation view) remove reported content.
+**User-visible outcome:** Users can customize their profile by uploading an avatar and additional photos, manage/removing them from “My Profile,” and other users will see the uploaded images on profile views (with default avatar fallback when none is uploaded).

@@ -1,329 +1,75 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-18T02:01:51.997Z",
+  "generatedAt": "2026-02-18T02:19:48.105Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 11,
-    "implemented": 11,
+    "total": 4,
+    "implemented": 2,
     "items": [
       {
-        "id": "REQ-1",
-        "summary": "Implement Internet Identity sign-in and require all app features (except the landing + age gate) to be accessible only to authenticated users.",
+        "id": "REQ-12",
+        "summary": "Extend community profiles to support user-uploaded profile photos (in addition to the existing avatar field), including storing and retrieving the uploaded image blobs as part of each user’s profile.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-13",
+        "summary": "Preserve existing production profile data when introducing new profile photo fields by implementing a conditional canister state migration (only if there is existing stable state) that upgrades stored profiles without data loss.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-14",
+        "summary": "Add UI on the “My Profile” page to let users upload and manage their profile photos: set/replace avatar photo, add additional photos, preview photos, and remove photos, then persist changes to the backend profile.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/auth/LoginButton.tsx",
-          "frontend/src/components/auth/RequireAuth.tsx",
-          "frontend/src/App.tsx",
-          "frontend/src/hooks/useAuth.ts"
+          "frontend/src/backendExtensions.d.ts",
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/components/profile/ProfilePhotosManager.tsx",
+          "frontend/src/pages/ProfileMe.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/App.tsx",
-          "frontend/src/hooks/useAuth.ts"
+          "frontend/src/components/profile/ProfilePhotosManager.tsx",
+          "frontend/src/pages/ProfileMe.tsx"
         ]
       },
       {
-        "id": "REQ-10",
-        "summary": "Add basic navigation for authenticated users: links to Feed, Directory (Mentors/Peers), Connections, Profile, Guidelines, and Sign out.",
+        "id": "REQ-15",
+        "summary": "Render user-uploaded avatar/profile photos on the “View Profile” page (and any other existing profile displays) so that other users see the customized profile visuals instead of always seeing the default avatar image.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/nav/AuthedNav.tsx",
-          "frontend/src/components/layout/AppShell.tsx",
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/nav/AuthedNav.tsx",
-          "frontend/src/components/layout/AppShell.tsx",
-          "frontend/src/App.tsx"
-        ]
-      },
-      {
-        "id": "REQ-11",
-        "summary": "Generate required static image assets and render them in the UI (stored under frontend/public/assets/generated) for branding and a welcoming feel.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/public/assets/generated/butterfly-connections-logo.dim_1024x256.png",
-          "frontend/public/assets/generated/butterfly-hero-bg.dim_1920x1080.png",
-          "frontend/public/assets/generated/default-avatar-set.dim_1024x1024.png",
-          "frontend/public/assets/generated/butterfly-app-icon.dim_512x512.png",
-          "frontend/index.html",
-          "frontend/src/pages/Landing.tsx",
-          "frontend/src/components/profile/AvatarPicker.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/public/assets/generated/butterfly-connections-logo.dim_1024x256.png",
-          "frontend/public/assets/generated/butterfly-hero-bg.dim_1920x1080.png",
-          "frontend/public/assets/generated/default-avatar-set.dim_1024x1024.png",
-          "frontend/public/assets/generated/butterfly-app-icon.dim_512x512.png",
-          "frontend/index.html",
-          "frontend/src/pages/Landing.tsx"
-        ]
-      },
-      {
-        "id": "REQ-2",
-        "summary": "Add an 18+ eligibility gate that users must explicitly confirm before they can access the authenticated community area; store the confirmation per user so they are not repeatedly prompted on subsequent sessions.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/hooks/useEligibility.ts",
-          "frontend/src/components/auth/AgeGate.tsx",
-          "frontend/src/components/auth/RequireEligibility.tsx",
-          "frontend/src/pages/Landing.tsx",
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/auth/AgeGate.tsx",
-          "frontend/src/pages/Landing.tsx",
-          "frontend/src/App.tsx"
-        ]
-      },
-      {
-        "id": "REQ-3",
-        "summary": "Create user profiles for community members, including: display name, pronouns (free-text), short bio, optional identity/interests tags, and an avatar image selector (use generated default avatars if the user does not upload).",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/hooks/useCommunityProfile.ts",
-          "frontend/src/components/profile/AvatarPicker.tsx",
-          "frontend/src/components/profile/ProfileEditor.tsx",
-          "frontend/src/pages/ProfileMe.tsx",
           "frontend/src/pages/ProfileView.tsx",
-          "frontend/src/components/profile/RequireProfileComplete.tsx",
-          "frontend/src/App.tsx"
+          "frontend/src/pages/Directory.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/ProfileMe.tsx",
           "frontend/src/pages/ProfileView.tsx",
-          "frontend/src/App.tsx"
-        ]
-      },
-      {
-        "id": "REQ-4",
-        "summary": "Implement social posting (“Share your story”) with a global feed: create post, view feed, view single post, and delete own post; posts should support text content and an optional image attachment.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/backendExtensions.d.ts",
-          "frontend/src/hooks/usePosts.ts",
-          "frontend/src/components/posts/PostComposer.tsx",
-          "frontend/src/components/posts/PostCard.tsx",
-          "frontend/src/pages/Feed.tsx",
-          "frontend/src/pages/PostDetail.tsx",
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/backendExtensions.d.ts",
-          "frontend/src/pages/Feed.tsx",
-          "frontend/src/pages/PostDetail.tsx",
-          "frontend/src/App.tsx"
-        ]
-      },
-      {
-        "id": "REQ-5",
-        "summary": "Add discussions via comments on posts: create comment and view comment thread per post; allow deleting own comment.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/backendExtensions.d.ts",
-          "frontend/src/hooks/useComments.ts",
-          "frontend/src/components/comments/CommentComposer.tsx",
-          "frontend/src/components/comments/CommentList.tsx",
-          "frontend/src/pages/PostDetail.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/backendExtensions.d.ts",
-          "frontend/src/pages/PostDetail.tsx"
-        ]
-      },
-      {
-        "id": "REQ-6",
-        "summary": "Implement friendship/connection features: allow users to send connection requests, accept/decline requests, view a list of connections, and remove a connection.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/hooks/useConnections.ts",
-          "frontend/src/components/connections/ConnectButton.tsx",
-          "frontend/src/pages/Connections.tsx",
-          "frontend/src/pages/ProfileView.tsx",
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/Connections.tsx",
-          "frontend/src/pages/ProfileView.tsx",
-          "frontend/src/App.tsx"
-        ]
-      },
-      {
-        "id": "REQ-7",
-        "summary": "Implement a mentor/peer support directory: allow users to optionally mark themselves as “Open to mentoring” and/or “Seeking mentorship”, and provide a browse/filter page to find people by these flags and tags.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/profile/ProfileEditor.tsx",
-          "frontend/src/hooks/useDirectory.ts",
-          "frontend/src/pages/Directory.tsx",
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/Directory.tsx",
-          "frontend/src/App.tsx"
-        ]
-      },
-      {
-        "id": "REQ-8",
-        "summary": "Add safety basics: a clear community guidelines page, per-post and per-comment reporting, and a simple moderation view to review reports and remove reported content.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/Guidelines.tsx",
-          "frontend/src/components/moderation/ReportDialog.tsx",
-          "frontend/src/hooks/useReporting.ts",
-          "frontend/src/backendExtensions.d.ts",
-          "frontend/src/pages/Moderation.tsx",
-          "frontend/src/components/auth/RequireAdmin.tsx",
-          "frontend/src/components/posts/PostCard.tsx",
-          "frontend/src/components/comments/CommentList.tsx",
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/Guidelines.tsx",
-          "frontend/src/backendExtensions.d.ts",
-          "frontend/src/pages/Moderation.tsx",
-          "frontend/src/App.tsx"
-        ]
-      },
-      {
-        "id": "REQ-9",
-        "summary": "Define and apply a coherent visual theme for Butterfly Connections that feels like a cozy, welcoming digital neighborhood (warm, soft palette; accessible typography; calm layout), and apply it consistently across landing, auth/age gate, feed, profiles, and directory pages.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/index.css",
-          "frontend/tailwind.config.js",
-          "frontend/src/components/layout/AppShell.tsx",
-          "frontend/src/pages/Landing.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/index.css",
-          "frontend/tailwind.config.js",
-          "frontend/src/components/layout/AppShell.tsx",
-          "frontend/src/pages/Landing.tsx"
+          "frontend/src/pages/Directory.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
-    "backend/authorization/MixinAuthorization.mo",
-    "backend/authorization/access-control.mo",
-    "backend/blob-storage/Mixin.mo",
-    "backend/blob-storage/Storage.mo",
     "backend/main.mo",
+    "backend/migration.mo",
     "build-request.json",
-    "build-template/Dockerfile",
-    "build-template/LICENSE",
     "build-template/README.md",
-    "build-template/deploy.sh",
-    "build-template/icp.yaml",
-    "build-template/package.json",
-    "build-template/pnpm-lock.yaml",
-    "build-template/pnpm-workspace.yaml",
-    "build-template/scripts/prune-unused-images.js",
-    "build-template/scripts/resize-images.js",
-    "build-template/src/backend/canister.yaml",
-    "build-template/src/backend/system-idl/aaaaa-aa.did",
-    "build-template/src/frontend/canister.yaml",
-    "build-template/src/frontend/components.json",
-    "build-template/src/frontend/env.json",
-    "build-template/src/frontend/eslint-rules/no-bigint-in-query-keys.js",
-    "build-template/src/frontend/eslint-rules/require-internet-identity-provider.js",
-    "build-template/src/frontend/eslint.config.js",
-    "build-template/src/frontend/package.json",
-    "build-template/src/frontend/postcss.config.js",
-    "build-template/src/frontend/src/components/ui/accordion.tsx",
-    "build-template/src/frontend/src/components/ui/alert-dialog.tsx",
-    "build-template/src/frontend/src/components/ui/alert.tsx",
-    "build-template/src/frontend/src/components/ui/aspect-ratio.tsx",
-    "build-template/src/frontend/src/components/ui/avatar.tsx",
-    "build-template/src/frontend/src/components/ui/badge.tsx",
-    "build-template/src/frontend/src/components/ui/breadcrumb.tsx",
-    "build-template/src/frontend/src/components/ui/button.tsx",
-    "build-template/src/frontend/src/components/ui/calendar.tsx",
-    "build-template/src/frontend/src/components/ui/card.tsx",
-    "build-template/src/frontend/src/components/ui/carousel.tsx",
-    "build-template/src/frontend/src/components/ui/chart.tsx",
-    "build-template/src/frontend/src/components/ui/checkbox.tsx",
-    "build-template/src/frontend/src/components/ui/collapsible.tsx",
-    "build-template/src/frontend/src/components/ui/command.tsx",
-    "build-template/src/frontend/src/components/ui/context-menu.tsx",
-    "build-template/src/frontend/src/components/ui/dialog.tsx",
-    "build-template/src/frontend/src/components/ui/drawer.tsx",
-    "build-template/src/frontend/src/components/ui/dropdown-menu.tsx",
-    "build-template/src/frontend/src/components/ui/form.tsx",
-    "build-template/src/frontend/src/components/ui/hover-card.tsx",
-    "build-template/src/frontend/src/components/ui/input-otp.tsx",
-    "build-template/src/frontend/src/components/ui/input.tsx",
-    "build-template/src/frontend/src/components/ui/label.tsx",
-    "build-template/src/frontend/src/components/ui/menubar.tsx",
-    "build-template/src/frontend/src/components/ui/navigation-menu.tsx",
-    "build-template/src/frontend/src/components/ui/pagination.tsx",
-    "build-template/src/frontend/src/components/ui/popover.tsx",
-    "build-template/src/frontend/src/components/ui/progress.tsx",
-    "build-template/src/frontend/src/components/ui/radio-group.tsx",
-    "build-template/src/frontend/src/components/ui/resizable.tsx",
-    "build-template/src/frontend/src/components/ui/scroll-area.tsx",
-    "build-template/src/frontend/src/components/ui/select.tsx",
-    "build-template/src/frontend/src/components/ui/separator.tsx",
-    "build-template/src/frontend/src/components/ui/sheet.tsx",
-    "build-template/src/frontend/src/components/ui/sidebar.tsx",
-    "build-template/src/frontend/src/components/ui/skeleton.tsx",
-    "build-template/src/frontend/src/components/ui/slider.tsx",
-    "build-template/src/frontend/src/components/ui/sonner.tsx",
-    "build-template/src/frontend/src/components/ui/switch.tsx",
-    "build-template/src/frontend/src/components/ui/table.tsx",
-    "build-template/src/frontend/src/components/ui/tabs.tsx",
-    "build-template/src/frontend/src/components/ui/textarea.tsx",
-    "build-template/src/frontend/src/components/ui/toggle-group.tsx",
-    "build-template/src/frontend/src/components/ui/toggle.tsx",
-    "build-template/src/frontend/src/components/ui/tooltip.tsx",
-    "build-template/src/frontend/src/hooks/use-mobile.tsx",
-    "build-template/src/frontend/src/lib/utils.ts",
-    "build-template/src/frontend/tsconfig.json",
-    "build-template/src/frontend/vite.config.js",
-    "build-template/tsconfig.json",
-    "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/index.css",
-    "frontend/index.html",
-    "frontend/public/assets/generated/butterfly-app-icon.dim_512x512.png",
-    "frontend/public/assets/generated/butterfly-connections-logo.dim_1024x256.png",
-    "frontend/public/assets/generated/butterfly-hero-bg.dim_1920x1080.png",
-    "frontend/public/assets/generated/default-avatar-set.dim_1024x1024.png",
-    "frontend/src/App.tsx",
     "frontend/src/backend.d.ts",
     "frontend/src/backend.ts",
-    "frontend/src/backendExtensions.d.ts",
-    "frontend/src/components/auth/AgeGate.tsx",
-    "frontend/src/components/layout/AppShell.tsx",
-    "frontend/src/components/nav/AuthedNav.tsx",
-    "frontend/src/config.ts",
+    "frontend/src/components/profile/ProfilePhotosManager.tsx",
     "frontend/src/declarations/backend.did.d.ts",
     "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useActor.ts",
-    "frontend/src/hooks/useAuth.ts",
-    "frontend/src/hooks/useInternetIdentity.ts",
-    "frontend/src/hooks/useQueries.ts",
-    "frontend/src/index.css",
-    "frontend/src/main.tsx",
-    "frontend/src/pages/Connections.tsx",
     "frontend/src/pages/Directory.tsx",
-    "frontend/src/pages/Feed.tsx",
-    "frontend/src/pages/Guidelines.tsx",
-    "frontend/src/pages/Landing.tsx",
-    "frontend/src/pages/Moderation.tsx",
-    "frontend/src/pages/PostDetail.tsx",
     "frontend/src/pages/ProfileMe.tsx",
     "frontend/src/pages/ProfileView.tsx",
-    "frontend/src/ui-summary.json",
-    "frontend/src/utils/StorageClient.ts",
-    "frontend/src/utils/urlParams.ts",
-    "frontend/tailwind.config.js",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

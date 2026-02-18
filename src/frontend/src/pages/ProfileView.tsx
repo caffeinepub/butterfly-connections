@@ -1,7 +1,6 @@
 import { useParams } from '@tanstack/react-router';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useGetCommunityProfile, useAddContact } from '../hooks/useQueries';
 import { useAuth } from '../hooks/useAuth';
 import { Principal } from '@dfinity/principal';
@@ -71,17 +70,26 @@ export default function ProfileView() {
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Avatar */}
-          <div className="flex justify-center">
-            <Avatar className="w-24 h-24">
-              <AvatarImage src="/assets/generated/default-avatar-set.dim_1024x1024.png" />
-              <AvatarFallback className="bg-[oklch(0.65_0.15_320)] text-white text-2xl">
-                {profile.displayName.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
+          {/* Avatar and Profile Photo */}
+          <div className="flex flex-col items-center gap-4">
+            <img
+              src={profile.avatar?.getDirectURL() || '/assets/generated/default-avatar-set.dim_1024x1024.png'}
+              alt={`${profile.displayName}'s avatar`}
+              className="w-32 h-32 rounded-full object-cover border-4 border-[oklch(0.90_0.02_320)]"
+            />
+            
+            {profile.profilePhoto && (
+              <div className="w-full max-w-md">
+                <img
+                  src={profile.profilePhoto.getDirectURL()}
+                  alt={`${profile.displayName}'s profile photo`}
+                  className="w-full h-64 object-cover rounded-lg border-2 border-[oklch(0.90_0.02_320)]"
+                />
+              </div>
+            )}
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-4 pt-4 border-t border-[oklch(0.90_0.02_320)]">
             <div>
               <h3 className="text-sm font-medium text-[oklch(0.50_0.06_320)] mb-1">Display Name</h3>
               <p className="text-[oklch(0.35_0.08_320)] text-lg">{profile.displayName}</p>
